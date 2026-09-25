@@ -132,9 +132,11 @@ function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
 }
 
 async function request(path, { method = 'GET', body, headers = {}, _retry = false, timeoutMs = 20000 } = {}) {
-  const isClientOnHttps = typeof window !== 'undefined' && window.location.protocol === 'https:'
-  const isBackendLocalhost = API_BASE.includes('localhost') || API_BASE.includes('127.0.0.1')
-  if (isClientOnHttps && isBackendLocalhost) {
+  const isRemoteWebHost = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+  const isLiveHttpsBackend = String(API_BASE || '').startsWith('https://')
+  const isStandaloneFrontend = isRemoteWebHost && !isLiveHttpsBackend
+
+  if (isStandaloneFrontend) {
     return handleMockRequest(path, { method, body })
   }
 
