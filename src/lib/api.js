@@ -343,7 +343,7 @@ async function request(path, { method = 'GET', body, headers = {}, _retry = fals
     }
     const message = payload?.message || `Request failed (${response.status})`
     const fieldErrors = payload?.details?.fieldErrors
-    if (fieldErrors && typeof fieldErrors === 'object') {
+    if (fieldErrors && typeof fieldErrors === 'object' && fieldErrors !== null) {
       const detailText = Object.entries(fieldErrors)
         .flatMap(([field, errors]) => (Array.isArray(errors) ? errors.map((item) => `${field}: ${item}`) : []))
         .join(' ')
