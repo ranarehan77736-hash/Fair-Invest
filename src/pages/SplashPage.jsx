@@ -72,8 +72,8 @@ function SplashPage() {
         ) : null}
         {supportedSocialLinks.length ? (
           <div className="splash-social-links">
-            {supportedSocialLinks.map((link) => (
-              <a key={link.id} href={link.url} target="_blank" rel="noreferrer" aria-label={link.label} title={link.label}>
+            {supportedSocialLinks.map((link, idx) => (
+              <a key={link.id || link.platform || idx} href={link.url} target="_blank" rel="noreferrer" aria-label={link.label} title={link.label}>
                 <link.Icon size={14} />
               </a>
             ))}

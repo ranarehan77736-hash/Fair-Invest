@@ -105,9 +105,11 @@ export function AppProvider({ children }) {
         const tree = unwrap(treeRes)
         const earnings = unwrap(earningsRes)
         const structure = unwrap(structureRes)
-        setReferralTree(tree.data || [])
-        setReferralEntries(earnings?.data?.entries || [])
-        if (structure?.data) setCommissionStructure(structure.data)
+        setReferralTree(Array.isArray(tree.data) ? tree.data : [])
+        const rawEntries = earnings?.data?.entries
+        const safeEntries = Array.isArray(rawEntries) ? rawEntries : (Array.isArray(earnings?.data) ? earnings.data : [])
+        setReferralEntries(safeEntries)
+        if (Array.isArray(structure?.data)) setCommissionStructure(structure.data)
       })
       .catch(() => { })
   }, [])
@@ -330,10 +332,10 @@ export function AppProvider({ children }) {
           id: `local-${Date.now()}`,
           name: capitalizedName,
           email: normalized || 'user@fairinvest.com',
-          balance: 1000,
-          totalEarnings: 150,
-          totalDeposits: 1000,
-          activeInvestments: 1,
+          balance: 0,
+          totalEarnings: 0,
+          totalDeposits: 0,
+          activeInvestments: 0,
         }
         localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
         setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))
@@ -366,6 +368,9 @@ export function AppProvider({ children }) {
         email: normalized,
         phone: phone || '',
         balance: 0,
+        totalEarnings: 0,
+        totalDeposits: 0,
+        activeInvestments: 0,
       }
       localStorage.setItem('fairinvest-local-user', JSON.stringify(userProfile))
       setUser((prev) => ({ ...prev, ...userProfile }))
@@ -388,9 +393,9 @@ export function AppProvider({ children }) {
           name: name || normalized.split('@')[0] || 'Investor',
           email: normalized || 'user@fairinvest.com',
           phone: phone || '',
-          balance: 500,
+          balance: 0,
           totalEarnings: 0,
-          totalDeposits: 500,
+          totalDeposits: 0,
           activeInvestments: 0,
         }
         localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
@@ -433,10 +438,10 @@ export function AppProvider({ children }) {
         id: `google-${Date.now()}`,
         name: userName.charAt(0).toUpperCase() + userName.slice(1),
         email: normalized,
-        balance: 1000,
-        totalEarnings: 150,
-        totalDeposits: 1000,
-        activeInvestments: 1,
+        balance: 0,
+        totalEarnings: 0,
+        totalDeposits: 0,
+        activeInvestments: 0,
       }
       localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
       setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))

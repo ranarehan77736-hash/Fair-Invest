@@ -229,9 +229,9 @@ function SignUpPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', paddingTop: '18px', borderTop: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(15, 23, 42, 0.1)' }}>
               <span style={{ fontSize: '0.75rem', color: subtitleColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Follow Us</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {supportedSocialLinks.map((link) => (
+                {supportedSocialLinks.map((link, idx) => (
                   <a
-                    key={link.id}
+                    key={link.id || link.platform || idx}
                     href={link.url}
                     target="_blank"
                     rel="noreferrer"

@@ -93,9 +93,9 @@ function AppLayout() {
           <div className="sidebar-social-links">
             <p className="muted small">Community</p>
             <div className="sidebar-social-list">
-              {supportedSocialLinks.map((link) => (
+              {supportedSocialLinks.map((link, idx) => (
                 <a
-                  key={link.id}
+                  key={link.id || link.platform || idx}
                   href={link.url}
                   target="_blank"
                   rel="noreferrer"

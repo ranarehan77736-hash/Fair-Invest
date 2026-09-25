@@ -24,12 +24,10 @@ function detectSocialPlatform(link) {
 }
 
 function getSupportedSocialLinks(links = []) {
-  if (!Array.isArray(links)) return []
   return links
     .map((link) => {
-      if (!link) return null
       const platform = detectSocialPlatform(link)
-      if (!platform || !PLATFORM_META[platform]) return null
+      if (!platform) return null
       return {
         ...link,
         platform,

@@ -34,10 +34,11 @@ import {
 import { useAppContext } from '../context/AppContext.jsx'
 import { useTheme } from '../context/ThemeContext.jsx'
 
-function buildChartData(transactions, balance, isDark = true) {
+function buildChartData(transactions = [], balance = 0, isDark = true) {
   const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
   const monthlyEarnings = monthLabels.map((month) => ({ month, earnings: 0 }))
-  transactions.forEach((txn) => {
+  const safeTransactions = Array.isArray(transactions) ? transactions : []
+  safeTransactions.forEach((txn) => {
     const date = new Date(txn.date)
     if (Number.isNaN(date.getTime())) return
     const monthIndex = date.getMonth()
@@ -124,8 +125,15 @@ function CustomPieTooltip({ active, payload, isDark }) {
 }
 
 function DashboardPage() {
-  const { user, transactions, referralCount, referralEarnings, investments, deposits, withdrawals } =
-    useAppContext()
+  const {
+    user = {},
+    transactions = [],
+    referralCount = 0,
+    referralEarnings = 0,
+    investments = [],
+    deposits = [],
+    withdrawals = [],
+  } = useAppContext() || {}
 
   let isDark = true
   try {
@@ -137,9 +145,10 @@ function DashboardPage() {
     isDark = true
   }
 
-  const { growthData, allocationData } = buildChartData(transactions, user.balance, isDark)
-  const lockedDepositBalance = Number(user.lockedBalance || 0)
-  const withdrawableBalance = Math.max(0, Number(user.balance || 0) - lockedDepositBalance)
+  const safeUser = user || {}
+  const { growthData, allocationData } = buildChartData(transactions, safeUser.balance || 0, isDark)
+  const lockedDepositBalance = Number(safeUser.lockedBalance || 0)
+  const withdrawableBalance = Math.max(0, Number(safeUser.balance || 0) - lockedDepositBalance)
 
   const monitor = useMemo(() => {
     const totalInvested = investments.reduce((sum, item) => sum + Number(item.amount || 0), 0)
@@ -184,7 +193,7 @@ function DashboardPage() {
     },
     {
       label: 'Active Investments',
-      value: user.activeInvestments,
+      value: safeUser.activeInvestments || 0,
       icon: Activity,
       tone: 'info',
       change: 'Live',
@@ -196,7 +205,7 @@ function DashboardPage() {
     },
     {
       label: 'Total Earnings',
-      value: `$${user.totalEarnings.toFixed(2)}`,
+      value: `$${Number(safeUser.totalEarnings || 0).toFixed(2)}`,
       icon: DollarSign,
       tone: 'violet',
       change: '+8.2%',

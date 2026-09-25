@@ -398,9 +398,9 @@ function LoginPage() {
                 Follow Us
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {supportedSocialLinks.map((link) => (
+                {supportedSocialLinks.map((link, idx) => (
                   <a
-                    key={link.id}
+                    key={link.id || link.platform || idx}
                     href={link.url}
                     target="_blank"
                     rel="noreferrer"

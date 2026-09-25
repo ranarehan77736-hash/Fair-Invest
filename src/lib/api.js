@@ -2,7 +2,6 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api
 
 let accessToken = localStorage.getItem('horizoninvest-access-token') || ''
 let refreshToken = localStorage.getItem('horizoninvest-refresh-token') || ''
-let refreshPromise = null
 
 function setTokens(nextAccessToken, nextRefreshToken = refreshToken) {
   accessToken = nextAccessToken || ''
@@ -23,48 +22,24 @@ function getAccessToken() {
   return accessToken
 }
 
-function shouldAttemptRefresh(path) {
-  if (!refreshToken) return false
-  return ![
-    '/auth/login',
-    '/auth/register',
-    '/auth/send-otp',
-    '/auth/signup-config',
-    '/auth/refresh',
-    '/auth/logout',
-    '/auth/forgot-password',
-    '/auth/reset-password',
-  ].includes(path)
+function getStoredUsers() {
+  try {
+    const raw = localStorage.getItem('fairinvest-users-db')
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
+  }
 }
 
-async function refreshAccessToken() {
-  if (!refreshToken) throw new Error('No refresh token')
-  if (refreshPromise) return refreshPromise
-
-  refreshPromise = (async () => {
-    const response = await fetch(`${API_BASE}/auth/refresh`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken }),
-    })
-    const payload = await response.json().catch(() => ({}))
-    if (!response.ok || !payload?.data?.accessToken) {
-      throw new Error(payload?.message || `Refresh failed (${response.status})`)
-    }
-    setTokens(payload.data.accessToken, refreshToken)
-    return payload.data.accessToken
-  })()
-
-  try {
-    return await refreshPromise
-  } finally {
-    refreshPromise = null
-  }
+function saveUserRecord(email, userRecord) {
+  const users = getStoredUsers()
+  users[email.toLowerCase()] = userRecord
+  localStorage.setItem('fairinvest-users-db', JSON.stringify(users))
 }
 
 function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
   const normalizedEmail = String(body?.email || 'demo@fairinvest.com').trim().toLowerCase()
-  const namePart = normalizedEmail.split('@')[0] || 'Demo Investor'
+  const namePart = normalizedEmail.split('@')[0] || 'Investor'
   const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)
 
   if (path === '/site-links') {
@@ -72,26 +47,43 @@ function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
       ok: true,
       status: 'success',
       data: [
-        { platform: 'whatsapp', url: 'https://whatsapp.com', label: 'Official WhatsApp' },
-        { platform: 'telegram', url: 'https://telegram.org', label: 'Telegram VIP Community' },
+        { id: 1, platform: 'whatsapp', url: 'https://whatsapp.com', label: 'Official WhatsApp' },
+        { id: 2, platform: 'telegram', url: 'https://telegram.org', label: 'Telegram VIP Community' },
       ],
     }
   }
 
   if (path === '/auth/login' || path === '/auth/register') {
-    const mockToken = `demo-token-${Date.now()}`
+    const mockToken = `local-token-${Date.now()}`
     setTokens(mockToken, mockToken)
+
+    const storedUsers = getStoredUsers()
+    const existingUser = storedUsers[normalizedEmail]
+
     const userProfile = {
-      id: `demo-${Date.now()}`,
-      name: body?.name || capitalizedName,
+      id: existingUser?.id || `user-${Date.now()}`,
+      name: body?.name || existingUser?.name || capitalizedName,
       email: normalizedEmail,
-      phone: body?.phone || '+92 300 1234567',
-      balance: 5450.00,
-      totalEarnings: 1650.25,
-      totalDeposits: 5000.00,
-      activeInvestments: 2,
+      phone: body?.phone || existingUser?.phone || '',
+      balance: existingUser?.balance ?? 0.00,
+      lockedBalance: existingUser?.lockedBalance ?? 0.00,
+      totalEarnings: existingUser?.totalEarnings ?? 0.00,
+      totalDeposits: existingUser?.totalDeposits ?? 0.00,
+      activeInvestments: existingUser?.activeInvestments ?? 0,
     }
+
+    // Store user credentials and record in localStorage
+    saveUserRecord(normalizedEmail, {
+      ...userProfile,
+      password: body?.password || existingUser?.password || '',
+    })
+
     localStorage.setItem('fairinvest-local-user', JSON.stringify(userProfile))
+    localStorage.setItem('fairinvest-saved-email', normalizedEmail)
+    if (body?.password) {
+      localStorage.setItem('fairinvest-saved-password', body.password)
+    }
+
     return {
       ok: true,
       status: 'success',
@@ -110,16 +102,16 @@ function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
       ? JSON.parse(stored)
       : {
           id: 'demo-user-1',
-          name: 'Demo Investor',
+          name: 'Investor',
           email: 'demo@fairinvest.com',
-          phone: '+92 300 1234567',
+          phone: '',
           country: 'Pakistan',
           referralCode: 'DEMO789',
-          balance: 5450.00,
-          lockedBalance: 1200.00,
-          totalDeposits: 5000.00,
-          totalEarnings: 1650.25,
-          activeInvestments: 2,
+          balance: 0.00,
+          lockedBalance: 0.00,
+          totalDeposits: 0.00,
+          totalEarnings: 0.00,
+          activeInvestments: 0,
         }
     return { ok: true, status: 'success', data: userProfile }
   }
@@ -185,99 +177,96 @@ function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
   }
 
   if (path === '/investments/mine') {
+    const stored = localStorage.getItem('fairinvest-user-investments')
     return {
       ok: true,
       status: 'success',
-      data: [
-        {
-          id: 101,
-          planName: 'Professional Yield Plan',
-          amount: 1000,
-          status: 'active',
-          startDate: '2026-09-20T10:00:00Z',
-          endDate: '2026-11-19T10:00:00Z',
-          expectedReturn: 2320,
-          profit: 110,
-          claimedEarning: 0,
-          accruedEarning: 110,
-          availableEarning: 110,
-          progressPercent: 18,
-          canWithdrawEarning: true,
-        },
-        {
-          id: 102,
-          planName: 'Starter Growth Plan',
-          amount: 500,
-          status: 'active',
-          startDate: '2026-09-23T10:00:00Z',
-          endDate: '2026-10-23T10:00:00Z',
-          expectedReturn: 725,
-          profit: 15,
-          claimedEarning: 0,
-          accruedEarning: 15,
-          availableEarning: 15,
-          progressPercent: 8,
-          canWithdrawEarning: true,
-        },
-      ],
+      data: stored ? JSON.parse(stored) : [],
     }
   }
 
   if (path === '/wallet/transactions') {
+    const stored = localStorage.getItem('fairinvest-user-transactions')
     return {
       ok: true,
       status: 'success',
-      data: [
-        { id: 1001, type: 'deposit', amount: 5000, status: 'completed', method: 'Bank Transfer', createdAt: '2026-09-19T12:00:00Z' },
-        { id: 1002, type: 'investment', amount: 1000, status: 'completed', method: 'Professional Yield Plan', createdAt: '2026-09-20T10:00:00Z' },
-        { id: 1003, type: 'earning', amount: 110, status: 'completed', method: 'Daily Yield Payout', createdAt: '2026-09-24T08:00:00Z' },
-        { id: 1004, type: 'withdrawal', amount: 500, status: 'completed', method: 'Easypaisa', createdAt: '2026-09-22T14:30:00Z' },
-      ],
+      data: stored ? JSON.parse(stored) : [],
     }
   }
 
   if (path === '/wallet/withdrawals') {
+    const stored = localStorage.getItem('fairinvest-user-withdrawals')
     return {
       ok: true,
       status: 'success',
-      data: [
-        { id: 201, method: 'easypaisa', amount: 500, status: 'approved', createdAt: '2026-09-22T14:30:00Z', accountDetails: { title: 'Demo User', number: '03001234567' } },
-      ],
+      data: stored ? JSON.parse(stored) : [],
       cooldown: { canWithdraw: true, nextAllowedAt: null, hoursRemaining: 0 },
     }
   }
 
   if (path === '/wallet/deposits') {
+    const stored = localStorage.getItem('fairinvest-user-deposits')
     return {
       ok: true,
       status: 'success',
-      data: [
-        { id: 301, amount: 5000, method: 'Bank Transfer', status: 'approved', createdAt: '2026-09-19T12:00:00Z' },
-      ],
+      data: stored ? JSON.parse(stored) : [],
     }
   }
 
   if (path === '/referrals/overview') {
+    const stored = localStorage.getItem('fairinvest-user-referral-overview')
+    return {
+      ok: true,
+      status: 'success',
+      data: stored
+        ? JSON.parse(stored)
+        : {
+            totalReferrals: 0,
+            directReferrals: 0,
+            indirectReferrals: 0,
+            totalEarnings: 0.00,
+          },
+    }
+  }
+
+  if (path === '/referrals/tree') {
+    const stored = localStorage.getItem('fairinvest-user-referral-tree')
+    return {
+      ok: true,
+      status: 'success',
+      data: stored ? JSON.parse(stored) : [],
+    }
+  }
+
+  if (path === '/referrals/earnings') {
+    const stored = localStorage.getItem('fairinvest-user-referral-earnings')
     return {
       ok: true,
       status: 'success',
       data: {
-        totalReferrals: 3,
-        directReferrals: 2,
-        indirectReferrals: 1,
-        totalEarnings: 350.00,
+        entries: stored ? JSON.parse(stored) : [],
       },
     }
   }
 
-  if (path === '/notifications/mine') {
+  if (path === '/referrals/commission-structure') {
     return {
       ok: true,
       status: 'success',
       data: [
-        { id: 1, title: 'Welcome to FairInvest Demo', message: 'Your investor account is active and verified.', read: true, createdAt: '2026-09-25T08:00:00Z' },
-        { id: 2, title: 'Yield Distributed', message: '+$110.00 profit credited from Professional Yield Plan.', read: false, createdAt: '2026-09-24T10:00:00Z' },
+        { level: 1, ratePercent: 10 },
+        { level: 2, ratePercent: 5 },
+        { level: 3, ratePercent: 2 },
       ],
+    }
+  }
+
+  if (path === '/notifications/mine') {
+    const stored = localStorage.getItem('fairinvest-user-notifications')
+    return {
+      ok: true,
+      status: 'success',
+      data: stored ? JSON.parse(stored) : [],
     }
   }
 
@@ -292,67 +281,38 @@ function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
     }
   }
 
-  return { ok: true, status: 'success', message: 'Operation successful (Demo Mode)', data: [] }
+  if (path === '/chat/room') {
+    return {
+      ok: true,
+      status: 'success',
+      data: { room_key: 'demo-chat-room-101' },
+    }
+  }
+
+  if (path.startsWith('/chat/') && path.endsWith('/messages')) {
+    return {
+      ok: true,
+      status: 'success',
+      data: [
+        { id: 1, senderRole: 'admin', content: 'Welcome to FairInvest support! How can we assist you with your investments today?' },
+      ],
+    }
+  }
+
+  if (path === '/chat/message') {
+    return {
+      ok: true,
+      status: 'success',
+      message: 'Message sent',
+    }
+  }
+
+  return { ok: true, status: 'success', message: 'Operation successful (Frontend Demo)', data: [] }
 }
 
-async function request(path, { method = 'GET', body, headers = {}, _retry = false, timeoutMs = 20000 } = {}) {
-  const isLiveHttpsBackend = String(API_BASE || '').startsWith('https://')
-
-  // In Demo Mode (or when live HTTPS backend URL is not set), route directly to mock handler with 0 network calls
-  if (!isLiveHttpsBackend) {
-    return handleMockRequest(path, { method, body })
-  }
-
-  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
-
-  let response
-  try {
-    response = await fetch(`${API_BASE}${path}`, {
-      method,
-      headers: {
-        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-        ...headers,
-      },
-      body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
-      signal: controller.signal,
-    })
-  } catch (error) {
-    if (error?.name === 'AbortError') {
-      throw new Error('Request timed out. Please check your connection and try again.')
-    }
-    throw error
-  } finally {
-    clearTimeout(timeoutId)
-  }
-
-  const payload = await response.json().catch(() => ({}))
-  if (!response.ok) {
-    if (response.status === 401 && !_retry && shouldAttemptRefresh(path)) {
-      try {
-        await refreshAccessToken()
-        return request(path, { method, body, headers, _retry: true })
-      } catch {
-        clearTokens()
-      }
-    }
-    if (response.status === 403 && String(payload?.message || '').toLowerCase().includes('blocked')) {
-      clearTokens()
-    }
-    const message = payload?.message || `Request failed (${response.status})`
-    const fieldErrors = payload?.details?.fieldErrors
-    if (fieldErrors && typeof fieldErrors === 'object' && fieldErrors !== null) {
-      const detailText = Object.entries(fieldErrors)
-        .flatMap(([field, errors]) => (Array.isArray(errors) ? errors.map((item) => `${field}: ${item}`) : []))
-        .join(' ')
-      if (detailText) throw new Error(`${message} ${detailText}`.trim())
-    }
-    throw new Error(message)
-  }
-
-  return payload
+async function request(path, { method = 'GET', body } = {}) {
+  // Completely disconnected from backend: always use local frontend mock handler
+  return handleMockRequest(path, { method, body })
 }
 
 export { request, setTokens, clearTokens, getAccessToken, API_BASE }
