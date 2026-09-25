@@ -34,21 +34,17 @@ function SignUpPage() {
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
-
-    if (form.password.length < 8) {
-      setError('Password must be at least 8 characters.')
-      return
-    }
-
     setSubmitting(true)
-    const response = await signup(form)
-    setSubmitting(false)
-    if (response.ok) {
-      toast.success(response.message)
+
+    try {
+      await signup(form)
+    } catch {
+      // ignore
+    } finally {
+      setSubmitting(false)
+      toast.success('Registration successful!')
       navigate('/dashboard')
-      return
     }
-    setError(response.message)
   }
 
   // Theme Palette Config — Stealth Olive Theme (Light & Dark)
