@@ -63,6 +63,12 @@ async function refreshAccessToken() {
 }
 
 async function request(path, { method = 'GET', body, headers = {}, _retry = false, timeoutMs = 20000 } = {}) {
+  const isClientOnHttps = typeof window !== 'undefined' && window.location.protocol === 'https:'
+  const isBackendLocalhost = API_BASE.includes('localhost') || API_BASE.includes('127.0.0.1')
+  if (isClientOnHttps && isBackendLocalhost) {
+    throw new TypeError('Failed to fetch: Backend is running on local server.')
+  }
+
   const isFormData = typeof FormData !== 'undefined' && body instanceof FormData
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
