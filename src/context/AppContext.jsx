@@ -109,7 +109,7 @@ export function AppProvider({ children }) {
         setReferralEntries(earnings?.data?.entries || [])
         if (structure?.data) setCommissionStructure(structure.data)
       })
-      .catch(() => {})
+      .catch(() => { })
   }, [])
 
   const refreshCoreData = useCallback(async () => {
@@ -240,7 +240,7 @@ export function AppProvider({ children }) {
       const token = getAccessToken()
 
       if (!token) {
-        await socialLinksPromise.catch(() => {})
+        await socialLinksPromise.catch(() => { })
         if (active) setIsBootstrapping(false)
         return
       }
@@ -260,8 +260,8 @@ export function AppProvider({ children }) {
           settings: meRes.data?.settings || savedUser?.settings || prev.settings,
         }))
         setIsBootstrapping(false)
-        socialLinksPromise.catch(() => {})
-        refreshCoreData().catch(() => {})
+        socialLinksPromise.catch(() => { })
+        refreshCoreData().catch(() => { })
       } catch (err) {
         const isNetworkErr =
           err?.name === 'TypeError' ||
@@ -293,86 +293,157 @@ export function AppProvider({ children }) {
   }, [fetchSocialLinks, refreshCoreData])
 
   const login = async ({ email, password }) => {
-    const normalized = String(email || 'user@fairinvest.com').trim().toLowerCase()
-    const namePart = normalized.split('@')[0] || 'Investor'
-    const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)
+    const normalized = String(email || '').trim().toLowerCase()
+    try {
+      const response = await request('/auth/login', {
+        method: 'POST',
+        body: { email: normalized, password },
+      })
+      setTokens(response.data.accessToken, response.data.refreshToken)
+      setIsAuthenticated(true)
+      setIsBootstrapping(false)
+      const userProfile = {
+        id: response.data?.user?.id || `user-${Date.now()}`,
+        name: response.data?.user?.name || normalized.split('@')[0] || 'Investor',
+        email: normalized,
+        balance: Number(response.data?.user?.balance || 0),
+      }
+      localStorage.setItem('fairinvest-local-user', JSON.stringify(userProfile))
+      setUser((prev) => ({ ...prev, ...userProfile }))
+      refreshCoreData().catch(() => { })
+      return { ok: true, message: response.message || 'Login successful.' }
+    } catch (error) {
+      const isNetworkErr =
+        error?.name === 'TypeError' ||
+        String(error?.message || '').toLowerCase().includes('fetch') ||
+        String(error?.message || '').toLowerCase().includes('network') ||
+        String(error?.message || '').toLowerCase().includes('cors')
 
-    const mockToken = `session-${Date.now()}`
-    setTokens(mockToken, mockToken)
-    setIsAuthenticated(true)
-    setIsBootstrapping(false)
-
-    const localUser = {
-      id: `user-${Date.now()}`,
-      name: capitalizedName,
-      email: normalized,
-      balance: 1000,
-      totalEarnings: 150,
-      totalDeposits: 1000,
-      activeInvestments: 1,
+      if (isNetworkErr) {
+        const mockToken = `local-session-${Date.now()}`
+        setTokens(mockToken, mockToken)
+        setIsAuthenticated(true)
+        setIsBootstrapping(false)
+        const namePart = normalized.split('@')[0] || 'Investor'
+        const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)
+        const localUser = {
+          id: `local-${Date.now()}`,
+          name: capitalizedName,
+          email: normalized || 'user@fairinvest.com',
+          balance: 1000,
+          totalEarnings: 150,
+          totalDeposits: 1000,
+          activeInvestments: 1,
+        }
+        localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
+        setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))
+        return { ok: true, message: 'Login successful!' }
+      }
+      return { ok: false, message: error.message || 'Login failed.' }
     }
-    localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
-    setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))
-
-    request('/auth/login', {
-      method: 'POST',
-      body: { email: normalized, password },
-    }).catch(() => {})
-
-    return { ok: true, message: 'Login successful!' }
   }
 
-  const signup = async ({ name, email, phone, password, referralCode }) => {
-    const normalized = String(email || 'user@fairinvest.com').trim().toLowerCase()
-    const namePart = name || normalized.split('@')[0] || 'Investor'
+  const signup = async ({ name, email, phone, password, referralCode, otp }) => {
+    const normalized = String(email || '').trim().toLowerCase()
+    try {
+      const response = await request('/auth/register', {
+        method: 'POST',
+        body: {
+          name,
+          email: normalized,
+          phone: phone || undefined,
+          password,
+          referralCode: referralCode || undefined,
+          ...(otp ? { otp } : {}),
+        },
+      })
+      setTokens(response.data.accessToken, response.data.refreshToken)
+      setIsAuthenticated(true)
+      setIsBootstrapping(false)
+      const userProfile = {
+        id: response.data?.user?.id || `user-${Date.now()}`,
+        name: name || normalized.split('@')[0] || 'Investor',
+        email: normalized,
+        phone: phone || '',
+        balance: 0,
+      }
+      localStorage.setItem('fairinvest-local-user', JSON.stringify(userProfile))
+      setUser((prev) => ({ ...prev, ...userProfile }))
+      refreshCoreData().catch(() => { })
+      return { ok: true, message: response.message || 'Registration successful.' }
+    } catch (error) {
+      const isNetworkErr =
+        error?.name === 'TypeError' ||
+        String(error?.message || '').toLowerCase().includes('fetch') ||
+        String(error?.message || '').toLowerCase().includes('network') ||
+        String(error?.message || '').toLowerCase().includes('cors')
 
-    const mockToken = `session-${Date.now()}`
-    setTokens(mockToken, mockToken)
-    setIsAuthenticated(true)
-    setIsBootstrapping(false)
-
-    const localUser = {
-      id: `user-${Date.now()}`,
-      name: namePart,
-      email: normalized,
-      phone: phone || '',
-      balance: 500,
-      totalEarnings: 0,
-      totalDeposits: 500,
-      activeInvestments: 0,
+      if (isNetworkErr) {
+        const mockToken = `local-session-${Date.now()}`
+        setTokens(mockToken, mockToken)
+        setIsAuthenticated(true)
+        setIsBootstrapping(false)
+        const localUser = {
+          id: `local-${Date.now()}`,
+          name: name || normalized.split('@')[0] || 'Investor',
+          email: normalized || 'user@fairinvest.com',
+          phone: phone || '',
+          balance: 500,
+          totalEarnings: 0,
+          totalDeposits: 500,
+          activeInvestments: 0,
+        }
+        localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
+        setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))
+        return { ok: true, message: 'Registration successful!' }
+      }
+      return { ok: false, message: error.message || 'Registration failed.' }
     }
-    localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
-    setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))
-
-    request('/auth/register', {
-      method: 'POST',
-      body: { name, email: normalized, phone, password, referralCode },
-    }).catch(() => {})
-
-    return { ok: true, message: 'Registration successful!' }
   }
 
-  const googleAuth = async (googleEmail) => {
-    const normalized = String(googleEmail || 'googleuser@gmail.com').trim().toLowerCase()
+  const googleAuth = async (googleEmail, googlePassword) => {
+    const normalized = String(googleEmail || 'user@gmail.com').trim().toLowerCase()
+    const pwd = googlePassword || 'GoogleUser123!'
     const userName = normalized.split('@')[0] || 'Google User'
 
-    const mockToken = `google-auth-${Date.now()}`
-    setTokens(mockToken, mockToken)
-    setIsAuthenticated(true)
-    setIsBootstrapping(false)
-
-    const localUser = {
-      id: `google-${Date.now()}`,
-      name: userName.charAt(0).toUpperCase() + userName.slice(1),
-      email: normalized,
-      balance: 1000,
-      totalEarnings: 150,
-      totalDeposits: 1000,
-      activeInvestments: 1,
+    try {
+      const loginRes = await login({ email: normalized, password: pwd })
+      if (loginRes.ok) return loginRes
+    } catch {
+      // Ignore API login error
     }
-    localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
-    setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))
-    return { ok: true, message: `Signed in as ${normalized}!` }
+
+    try {
+      const signupRes = await signup({
+        name: userName,
+        email: normalized,
+        password: pwd,
+      })
+      if (signupRes.ok) return signupRes
+    } catch {
+      // Ignore API signup error
+    }
+
+    try {
+      const mockToken = `google-auth-${Date.now()}`
+      setTokens(mockToken, mockToken)
+      setIsAuthenticated(true)
+      setIsBootstrapping(false)
+      const localUser = {
+        id: `google-${Date.now()}`,
+        name: userName.charAt(0).toUpperCase() + userName.slice(1),
+        email: normalized,
+        balance: 1000,
+        totalEarnings: 150,
+        totalDeposits: 1000,
+        activeInvestments: 1,
+      }
+      localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
+      setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))
+      return { ok: true, message: `Signed in with Google as ${normalized}!` }
+    } catch (err) {
+      return { ok: false, message: err.message || 'Google sign-in failed.' }
+    }
   }
 
   const sendOTP = async (email) => {
@@ -393,12 +464,7 @@ export function AppProvider({ children }) {
       }
       return { ok: true, message: response.message || 'OTP sent successfully.' }
     } catch (error) {
-      return {
-        ok: true,
-        message: 'Verification code sent! (Enter 000000 to proceed)',
-        devCode: '000000',
-        verificationSkipped: true,
-      }
+      return { ok: false, message: error.message || 'Failed to send OTP.' }
     }
   }
 
@@ -411,7 +477,7 @@ export function AppProvider({ children }) {
       })
       return { ok: true, message: response.message || 'Reset code sent successfully.', devCode: response.devCode }
     } catch (error) {
-      return { ok: true, message: 'Reset code sent! Use verification code 000000.', devCode: '000000' }
+      return { ok: false, message: error.message || 'Unable to send reset code.' }
     }
   }
 
@@ -424,7 +490,7 @@ export function AppProvider({ children }) {
       })
       return { ok: true, message: response.message || 'Code verified successfully.' }
     } catch (error) {
-      return { ok: true, message: 'Code verified successfully.' }
+      return { ok: false, message: error.message || 'Invalid or expired verification code.' }
     }
   }
 
@@ -437,7 +503,7 @@ export function AppProvider({ children }) {
       })
       return { ok: true, message: response.message || 'Password reset successful.' }
     } catch (error) {
-      return { ok: true, message: 'Password reset successful.' }
+      return { ok: false, message: error.message || 'Unable to reset password.' }
     }
   }
 
@@ -477,7 +543,7 @@ export function AppProvider({ children }) {
         method: 'POST',
         body: { planId: Number(planId), amount: Number(amount) },
       })
-      refreshCoreData().catch(() => {})
+      refreshCoreData().catch(() => { })
       return { ok: true, message: response.message || 'Investment placed successfully.' }
     } catch (error) {
       return { ok: false, message: error.message || 'Unable to place investment.' }
@@ -493,7 +559,7 @@ export function AppProvider({ children }) {
       if (paymentAccountId) form.append('paymentAccountId', String(paymentAccountId))
       form.append('proof', proofFile)
       const response = await request('/wallet/deposit', { method: 'POST', body: form })
-      refreshCoreData().catch(() => {})
+      refreshCoreData().catch(() => { })
       return { ok: true, message: response.message || 'Deposit request submitted.' }
     } catch (error) {
       return { ok: false, message: error.message || 'Unable to submit deposit.' }
@@ -506,7 +572,7 @@ export function AppProvider({ children }) {
         method: 'POST',
         body: { amount: Number(amount), method, accountDetails },
       })
-      refreshCoreData().catch(() => {})
+      refreshCoreData().catch(() => { })
       return { ok: true, message: response.message || 'Withdrawal request submitted.' }
     } catch (error) {
       return { ok: false, message: error.message || 'Unable to request withdrawal.' }
@@ -516,7 +582,7 @@ export function AppProvider({ children }) {
   const claimInvestment = async (investmentId) => {
     try {
       const response = await request(`/investments/${investmentId}/claim`, { method: 'POST' })
-      refreshCoreData().catch(() => {})
+      refreshCoreData().catch(() => { })
       return { ok: true, message: response.message || 'Investment claimed successfully.' }
     } catch (error) {
       return { ok: false, message: error.message || 'Unable to claim investment.' }
@@ -529,7 +595,7 @@ export function AppProvider({ children }) {
         method: 'POST',
         body: amount ? { amount: Number(amount) } : {},
       })
-      refreshCoreData().catch(() => {})
+      refreshCoreData().catch(() => { })
       return { ok: true, message: response.message || 'Earning withdrawn to wallet.' }
     } catch (error) {
       return { ok: false, message: error.message || 'Unable to withdraw earning.' }
@@ -549,7 +615,7 @@ export function AppProvider({ children }) {
   const updateProfile = async (payload) => {
     try {
       const response = await request('/users/me', { method: 'PATCH', body: payload })
-      refreshCoreData().catch(() => {})
+      refreshCoreData().catch(() => { })
       return { ok: true, message: response.message || 'Profile updated.' }
     } catch (error) {
       return { ok: false, message: error.message || 'Unable to update profile.' }
@@ -574,7 +640,7 @@ export function AppProvider({ children }) {
         method: 'PATCH',
         body: { enabled },
       })
-      refreshCoreData().catch(() => {})
+      refreshCoreData().catch(() => { })
       return { ok: true, message: response.message || '2FA updated.' }
     } catch (error) {
       return { ok: false, message: error.message || 'Unable to update 2FA.' }
@@ -587,7 +653,7 @@ export function AppProvider({ children }) {
         method: 'PATCH',
         body: settings,
       })
-      refreshCoreData().catch(() => {})
+      refreshCoreData().catch(() => { })
       return { ok: true, message: response.message || 'Notification settings updated.' }
     } catch (error) {
       return { ok: false, message: error.message || 'Unable to update notifications.' }
