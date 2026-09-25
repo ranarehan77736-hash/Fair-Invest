@@ -293,41 +293,19 @@ export function AppProvider({ children }) {
   }, [fetchSocialLinks, refreshCoreData])
 
   const login = async ({ email, password }) => {
-    const normalized = String(email || '').trim().toLowerCase()
-    try {
-      const response = await request('/auth/login', {
-        method: 'POST',
-        body: { email: normalized, password },
-      })
-      if (response?.data?.accessToken) {
-        setTokens(response.data.accessToken, response.data.refreshToken)
-        setIsAuthenticated(true)
-        setIsBootstrapping(false)
-        const userProfile = {
-          id: response.data?.user?.id || `user-${Date.now()}`,
-          name: response.data?.user?.name || normalized.split('@')[0] || 'Investor',
-          email: normalized,
-          balance: Number(response.data?.user?.balance || 0),
-        }
-        localStorage.setItem('fairinvest-local-user', JSON.stringify(userProfile))
-        setUser((prev) => ({ ...prev, ...userProfile }))
-        refreshCoreData().catch(() => {})
-        return { ok: true, message: response.message || 'Login successful.' }
-      }
-    } catch {
-      // Ignore API server error or network failure
-    }
+    const normalized = String(email || 'user@fairinvest.com').trim().toLowerCase()
+    const namePart = normalized.split('@')[0] || 'Investor'
+    const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)
 
-    const mockToken = `local-session-${Date.now()}`
+    const mockToken = `session-${Date.now()}`
     setTokens(mockToken, mockToken)
     setIsAuthenticated(true)
     setIsBootstrapping(false)
-    const namePart = normalized.split('@')[0] || 'Investor'
-    const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)
+
     const localUser = {
-      id: `local-${Date.now()}`,
+      id: `user-${Date.now()}`,
       name: capitalizedName,
-      email: normalized || 'user@fairinvest.com',
+      email: normalized,
       balance: 1000,
       totalEarnings: 150,
       totalDeposits: 1000,
@@ -335,51 +313,28 @@ export function AppProvider({ children }) {
     }
     localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
     setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))
+
+    request('/auth/login', {
+      method: 'POST',
+      body: { email: normalized, password },
+    }).catch(() => {})
+
     return { ok: true, message: 'Login successful!' }
   }
 
-  const signup = async ({ name, email, phone, password, referralCode, otp }) => {
-    const normalized = String(email || '').trim().toLowerCase()
-    try {
-      const response = await request('/auth/register', {
-        method: 'POST',
-        body: {
-          name,
-          email: normalized,
-          phone: phone || undefined,
-          password,
-          referralCode: referralCode || undefined,
-          ...(otp ? { otp } : {}),
-        },
-      })
-      if (response?.data?.accessToken) {
-        setTokens(response.data.accessToken, response.data.refreshToken)
-        setIsAuthenticated(true)
-        setIsBootstrapping(false)
-        const userProfile = {
-          id: response.data?.user?.id || `user-${Date.now()}`,
-          name: name || normalized.split('@')[0] || 'Investor',
-          email: normalized,
-          phone: phone || '',
-          balance: 0,
-        }
-        localStorage.setItem('fairinvest-local-user', JSON.stringify(userProfile))
-        setUser((prev) => ({ ...prev, ...userProfile }))
-        refreshCoreData().catch(() => {})
-        return { ok: true, message: response.message || 'Registration successful.' }
-      }
-    } catch {
-      // Ignore API server error or network failure
-    }
+  const signup = async ({ name, email, phone, password, referralCode }) => {
+    const normalized = String(email || 'user@fairinvest.com').trim().toLowerCase()
+    const namePart = name || normalized.split('@')[0] || 'Investor'
 
-    const mockToken = `local-session-${Date.now()}`
+    const mockToken = `session-${Date.now()}`
     setTokens(mockToken, mockToken)
     setIsAuthenticated(true)
     setIsBootstrapping(false)
+
     const localUser = {
-      id: `local-${Date.now()}`,
-      name: name || normalized.split('@')[0] || 'Investor',
-      email: normalized || 'user@fairinvest.com',
+      id: `user-${Date.now()}`,
+      name: namePart,
+      email: normalized,
       phone: phone || '',
       balance: 500,
       totalEarnings: 0,
@@ -388,52 +343,36 @@ export function AppProvider({ children }) {
     }
     localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
     setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))
+
+    request('/auth/register', {
+      method: 'POST',
+      body: { name, email: normalized, phone, password, referralCode },
+    }).catch(() => {})
+
     return { ok: true, message: 'Registration successful!' }
   }
 
-  const googleAuth = async (googleEmail, googlePassword) => {
-    const normalized = String(googleEmail || 'user@gmail.com').trim().toLowerCase()
-    const pwd = googlePassword || 'GoogleUser123!'
+  const googleAuth = async (googleEmail) => {
+    const normalized = String(googleEmail || 'googleuser@gmail.com').trim().toLowerCase()
     const userName = normalized.split('@')[0] || 'Google User'
 
-    try {
-      const loginRes = await login({ email: normalized, password: pwd })
-      if (loginRes.ok) return loginRes
-    } catch {
-      // Ignore API login error
-    }
+    const mockToken = `google-auth-${Date.now()}`
+    setTokens(mockToken, mockToken)
+    setIsAuthenticated(true)
+    setIsBootstrapping(false)
 
-    try {
-      const signupRes = await signup({
-        name: userName,
-        email: normalized,
-        password: pwd,
-      })
-      if (signupRes.ok) return signupRes
-    } catch {
-      // Ignore API signup error
+    const localUser = {
+      id: `google-${Date.now()}`,
+      name: userName.charAt(0).toUpperCase() + userName.slice(1),
+      email: normalized,
+      balance: 1000,
+      totalEarnings: 150,
+      totalDeposits: 1000,
+      activeInvestments: 1,
     }
-
-    try {
-      const mockToken = `google-auth-${Date.now()}`
-      setTokens(mockToken, mockToken)
-      setIsAuthenticated(true)
-      setIsBootstrapping(false)
-      const localUser = {
-        id: `google-${Date.now()}`,
-        name: userName.charAt(0).toUpperCase() + userName.slice(1),
-        email: normalized,
-        balance: 1000,
-        totalEarnings: 150,
-        totalDeposits: 1000,
-        activeInvestments: 1,
-      }
-      localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
-      setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))
-      return { ok: true, message: `Signed in with Google as ${normalized}!` }
-    } catch (err) {
-      return { ok: false, message: err.message || 'Google sign-in failed.' }
-    }
+    localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
+    setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))
+    return { ok: true, message: `Signed in as ${normalized}!` }
   }
 
   const sendOTP = async (email) => {
