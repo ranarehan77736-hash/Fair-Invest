@@ -35,21 +35,11 @@ async function runAutoProfitCycle() {
 
 server.listen(env.port, async () => {
   // eslint-disable-next-line no-console
-  console.log(`HorizonInvest backend running on port ${env.port}`);
+  console.log(`FairInvest backend running on port ${env.port}`);
   // eslint-disable-next-line no-console
   console.log(
-    `Auth OTP: signup=${env.skipSignupOtp ? "off" : "on"}, forgot-password=${env.enableForgotPasswordOtp ? "on" : "off"}, smtp=${isSmtpConfigured() ? "configured" : "missing"}`,
+    `Auth OTP: signup=${env.skipSignupOtp ? "off" : "on"}, forgot-password=on (local/console), smtp=${isSmtpConfigured() ? "configured" : "bypassed"}`,
   );
-  if (env.enableForgotPasswordOtp && isSmtpConfigured()) {
-    try {
-      await verifySmtpConnection();
-      // eslint-disable-next-line no-console
-      console.log("SMTP connection verified for password-reset emails.");
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("SMTP verification failed:", error?.message || error);
-    }
-  }
   const intervalMinutes = env.autoProfitIntervalMinutes;
   if (env.autoProfitEnabled) {
     runAutoProfitCycle();

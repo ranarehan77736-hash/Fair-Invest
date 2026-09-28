@@ -270,33 +270,12 @@ router.post(
       .first();
 
     if (!user) {
-      // Auto-register new email on local server database so login always succeeds
-      const passwordHash = await bcrypt.hash(password, 10);
-      const name = email.split("@")[0] || "User";
-      const [newId] = await db("users").insert({
-        role_id: 1,
-        name,
-        email,
-        password_hash: passwordHash,
-        country: "Pakistan",
-        is_verified: true,
-      });
-
-      await db("wallets").insert({ user_id: newId, balance: 1000, locked_balance: 0 }).catch(() => {});
-      await db("settings").insert({ user_id: newId }).catch(() => {});
-      await db("referral_codes").insert({ user_id: newId, code: generateReferralCode(name) }).catch(() => {});
-      await db("referral_links").insert({ user_id: newId, token: generateReferralLinkToken() }).catch(() => {});
-
-      user = await db("users")
-        .leftJoin("roles", "users.role_id", "roles.id")
-        .select("users.*", "roles.name as role_name")
-        .where("users.id", newId)
-        .first();
-    } else {
-      if (user.is_blocked) throw new ApiError(403, "Account is blocked");
-      const isMatch = await bcrypt.compare(password, user.password_hash);
-      if (!isMatch) throw new ApiError(401, "Invalid credentials");
+      throw new ApiError(401, "Invalid email or password");
     }
+
+    if (user.is_blocked) throw new ApiError(403, "Account is blocked");
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+    if (!isMatch) throw new ApiError(401, "Invalid email or password");
 
     const payload = { id: user.id, email: user.email, role: user.role_name || "user" };
     const accessToken = signAccessToken(payload);
@@ -404,6 +383,15 @@ router.post(
       type: "password_reset",
     });
 
+    // Print reset code in backend console for testing
+    // eslint-disable-next-line no-console
+    console.log(`\n=================================================`);
+    // eslint-disable-next-line no-console
+    console.log(`[PASSWORD RESET CODE FOR ${email}]: ${otp}`);
+    // eslint-disable-next-line no-console
+    console.log(`=================================================\n`);
+
+    // Send email to user inbox via SMTP if configured
     await deliverOtpEmail(email, otp, OTP_PURPOSE.passwordReset);
 
     const isSmtpReady = isSmtpConfigured();
@@ -411,8 +399,8 @@ router.post(
       success: true,
       message: isSmtpReady
         ? `Reset code sent to ${email}. Please check your email inbox.`
-        : `Verification code generated: ${otp}`,
-      devCode: isSmtpReady ? undefined : otp,
+        : `Reset code generated: ${otp}`,
+      devCode: otp,
     });
   }),
 );

@@ -39,13 +39,13 @@ function AboutPage() {
             letterSpacing: '0.05em',
           }}
         >
-          About Horizoneinvest
+          About FairInvest
         </span>
         <h2 className="page-title" style={{ margin: '0 0 0.5rem 0', fontSize: '1.9rem', fontWeight: 800, color: isDark ? '#f0f4ef' : '#141e14' }}>
           Your Trusted Ecosystem for Structured Online Investing
         </h2>
         <p className="muted" style={{ margin: 0, fontSize: '0.98rem', lineHeight: 1.65, color: isDark ? '#9ca899' : '#526352', maxWidth: '820px' }}>
-          Horizoneinvest is designed to give users a clear path from choosing plans to tracking earnings,
+          FairInvest is designed to give users a clear path from choosing plans to tracking earnings,
           managing referrals, and withdrawing funds. The platform combines a simple user experience with
           transparent investment data so users always understand what they are doing.
         </p>
@@ -73,7 +73,7 @@ function AboutPage() {
           </div>
           <p className="muted" style={{ fontSize: '0.92rem', lineHeight: 1.6, color: isDark ? '#9ca899' : '#526352', margin: '0 0 1rem 0' }}>
             The mission is to make digital investing easier, more transparent, and more actionable for every
-            user. Instead of confusing dashboards, Horizoneinvest focuses on clear numbers and guided actions.
+            user. Instead of confusing dashboards, FairInvest focuses on clear numbers and guided actions.
           </p>
           <ul className="about-list" style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', padding: 0, margin: 0, listStyle: 'none' }}>
             <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', color: isDark ? '#cbd5e1' : '#233023' }}>
@@ -136,7 +136,7 @@ function AboutPage() {
             Our Ecosystem & Investment Verticals
           </h3>
           <p className="muted" style={{ margin: 0, fontSize: '0.95rem', lineHeight: 1.65, color: isDark ? '#9ca899' : '#526352', maxWidth: '880px' }}>
-            At Horizoneinvest, our strength lies in our diversified investment ecosystem. We don’t just rely on a single asset class; instead, we strategically allocate our investors' capital across three distinct, highly profitable, and sustainable verticals. This multi-sector approach ensures that our portfolio remains resilient against market volatility while generating consistent, high-yield returns.
+            At FairInvest, our strength lies in our diversified investment ecosystem. We don’t just rely on a single asset class; instead, we strategically allocate our investors' capital across three distinct, highly profitable, and sustainable verticals. This multi-sector approach ensures that our portfolio remains resilient against market volatility while generating consistent, high-yield returns.
           </p>
         </div>
 

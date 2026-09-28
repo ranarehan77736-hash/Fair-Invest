@@ -52,7 +52,7 @@ const env = {
     secure: process.env.SMTP_SECURE === "true",
     user: sanitizeEnvValue(process.env.SMTP_USER),
     pass: sanitizeEnvValue(process.env.SMTP_PASS),
-    fromName: sanitizeEnvValue(process.env.SMTP_FROM_NAME) || "Horizoneinvest",
+    fromName: sanitizeEnvValue(process.env.SMTP_FROM_NAME) || "FairInvest",
     fromEmail: sanitizeEnvValue(process.env.SMTP_FROM_EMAIL),
   },
   // Signup OTP is off by default. Set REQUIRE_SIGNUP_OTP=true in .env to turn it back on.

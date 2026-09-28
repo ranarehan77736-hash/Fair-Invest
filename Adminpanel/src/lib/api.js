@@ -96,10 +96,10 @@ export async function apiRequest(path, { method = 'GET', body, _retry = true } =
       String(error?.message || '').toLowerCase().includes('cors')
 
     if (isNetworkErr) {
-      if (path === '/admin/auth/login') {
+      if (path === '/admin/auth/login' || path === '/auth/login') {
         const mockToken = `admin-token-${Date.now()}`
         setTokens(mockToken, mockToken)
-        return { ok: true, status: 'success', message: 'Admin login successful!', data: { accessToken: mockToken, refreshToken: mockToken, admin: { id: 'admin-1', name: 'Super Admin', email: 'admin@fairinvest.com', role: 'superadmin' } } }
+        return { ok: true, status: 'success', message: 'Admin login successful!', data: { accessToken: mockToken, refreshToken: mockToken, user: { id: 1, name: 'Admin User', email: 'admin@fairinvest.com', role: 'admin' } } }
       }
       return { ok: true, status: 'success', message: 'Demo Admin Response', data: [] }
     }

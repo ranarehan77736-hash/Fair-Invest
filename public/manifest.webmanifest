@@ -1,6 +1,6 @@
 {
-  "name": "HorizoneInvest",
-  "short_name": "HorizoneInvest",
+  "name": "FairInvest",
+  "short_name": "FairInvest",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -8,7 +8,7 @@
   "orientation": "portrait",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
-  "description": "HorizoneInvest web application.",
+  "description": "FairInvest web application.",
   "icons": [
     {
       "src": "/icon.png",

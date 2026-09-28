@@ -23,8 +23,14 @@ function detectSocialPlatform(link) {
   return null
 }
 
+const DEFAULT_FALLBACK_LINKS = [
+  { id: 1, platform: 'whatsapp', title: 'Official WhatsApp Channel', url: 'https://whatsapp.com', label: 'Official WhatsApp Channel' },
+  { id: 2, platform: 'telegram', title: 'Telegram VIP Community', url: 'https://telegram.org', label: 'Telegram VIP Community' },
+]
+
 function getSupportedSocialLinks(links = []) {
-  return links
+  const source = Array.isArray(links) && links.length > 0 ? links : DEFAULT_FALLBACK_LINKS
+  const result = source
     .map((link) => {
       const platform = detectSocialPlatform(link)
       if (!platform) return null
@@ -36,6 +42,13 @@ function getSupportedSocialLinks(links = []) {
       }
     })
     .filter(Boolean)
+
+  if (result.length > 0) return result
+
+  return DEFAULT_FALLBACK_LINKS.map((link) => ({
+    ...link,
+    Icon: PLATFORM_META[link.platform].Icon,
+  }))
 }
 
 export { PLATFORM_META, detectSocialPlatform, getSupportedSocialLinks }

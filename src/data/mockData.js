@@ -2,7 +2,7 @@ export const investmentPlans = [
   {
     id: 'starter',
     name: 'Starter Plan',
-    minAmount: 100,
+    minAmount: 1,
     maxAmount: 999,
     durationDays: 30,
     dailyReturn: 2,

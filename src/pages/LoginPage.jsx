@@ -34,12 +34,6 @@ function LoginPage() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
-
-  const [showGoogleModal, setShowGoogleModal] = useState(false)
-  const [googleEmail, setGoogleEmail] = useState('')
-  const [googlePassword, setGooglePassword] = useState('')
-  const [googleAuthLoading, setGoogleAuthLoading] = useState(false)
-
   const handleEmailChange = (e) => {
     const val = e.target.value
     setForm((prev) => ({ ...prev, email: val }))
@@ -89,28 +83,6 @@ function LoginPage() {
     }
     setErrorMsg(response.message || 'Invalid email or password')
     toast.error(response.message || 'Invalid email or password')
-  }
-
-  const handleGoogleSubmit = async (event) => {
-    if (event) event.preventDefault()
-    if (!googleEmail.trim()) {
-      toast.error('Please enter your Google Email or Phone.')
-      return
-    }
-    if (!googlePassword) {
-      toast.error('Please enter your Google Password.')
-      return
-    }
-    setGoogleAuthLoading(true)
-    const res = await googleAuth(googleEmail, googlePassword)
-    setGoogleAuthLoading(false)
-    if (res.ok) {
-      toast.success(`Signed in with Google as ${googleEmail}!`)
-      setShowGoogleModal(false)
-      navigate('/dashboard')
-    } else {
-      toast.error(res.message || 'Google sign in failed.')
-    }
   }
 
   // Theme Palette Config — Stealth Olive Theme (Light & Dark)
@@ -592,66 +564,6 @@ function LoginPage() {
               </Button>
             </form>
 
-            <div style={{ position: 'relative', textAlign: 'center', margin: '8px 0' }}>
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: 0,
-                  right: 0,
-                  borderTop: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(15, 23, 42, 0.1)',
-                }}
-              />
-              <span
-                style={{
-                  position: 'relative',
-                  padding: '0 12px',
-                  background: isDark ? '#121812' : '#e0f2fe',
-                  borderRadius: '999px',
-                  fontSize: '0.72rem',
-                  color: subtitleColor,
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  transition: 'all 0.25s ease',
-                }}
-              >
-                SECURE SINGLE SIGN-ON
-              </span>
-            </div>
-
-            <div style={{ width: '100%' }}>
-              <button
-                type="button"
-                onClick={() => setShowGoogleModal(true)}
-                style={{
-                  width: '100%',
-                  height: '46px',
-                  borderRadius: '14px',
-                  background: directAuthBg,
-                  border: directAuthBorder,
-                  color: titleColor,
-                  fontSize: '0.92rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '10px',
-                  boxShadow: isDark ? '0 4px 14px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.06)',
-                  transition: 'all 0.25s ease',
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                </svg>
-                <span>Sign in with Google</span>
-              </button>
-            </div>
-
             <p style={{ textAlign: 'center', fontSize: '0.86rem', color: subtitleColor, margin: '4px 0 0 0', transition: 'color 0.25s ease' }}>
               New to FairInvest?{' '}
               <Link to="/signup" style={{ color: accentColor, fontWeight: 700, textDecoration: 'none' }}>
@@ -661,158 +573,6 @@ function LoginPage() {
           </div>
         </motion.div>
       </div>
-
-      {/* Google Sign-In Direct Modal */}
-      {showGoogleModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 300,
-            display: 'grid',
-            placeItems: 'center',
-            padding: '1.25rem',
-            background: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(8px)',
-          }}
-        >
-          <div
-            style={{
-              width: 'min(440px, 100%)',
-              padding: '2.4rem 2rem 2.2rem',
-              borderRadius: '24px',
-              background: isDark ? '#181f18' : '#ffffff',
-              border: isDark ? '1px solid rgba(132, 169, 90, 0.35)' : '1px solid #e2e8f0',
-              boxShadow: isDark
-                ? '0 25px 65px rgba(0, 0, 0, 0.95), 0 0 45px rgba(132, 169, 90, 0.2)'
-                : '0 25px 50px rgba(0, 0, 0, 0.18)',
-              position: 'relative',
-              boxSizing: 'border-box',
-            }}
-          >
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={() => setShowGoogleModal(false)}
-              style={{
-                position: 'absolute',
-                top: '1.1rem',
-                right: '1.1rem',
-                width: '34px',
-                height: '34px',
-                borderRadius: '50%',
-                border: isDark ? '1px solid rgba(132, 169, 90, 0.25)' : '1px solid #cbd5e1',
-                background: isDark ? 'rgba(255,255,255,0.06)' : '#f8fafc',
-                color: isDark ? '#9ca899' : '#64748b',
-                display: 'grid',
-                placeItems: 'center',
-                cursor: 'pointer',
-                fontWeight: 800,
-              }}
-            >
-              ✕
-            </button>
-
-            {/* Google Header */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '0.5rem', marginBottom: '1.75rem' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: isDark ? 'rgba(255, 255, 255, 0.08)' : '#f8fafc', display: 'grid', placeItems: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                </svg>
-              </div>
-              <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: titleColor }}>
-                Sign in with Google
-              </h3>
-              <p style={{ margin: 0, fontSize: '0.88rem', color: subtitleColor }}>
-                to continue to <strong style={{ color: accentColor }}>FairInvest.com</strong>
-              </p>
-            </div>
-
-            {/* Direct Email & Password Form */}
-            <form onSubmit={handleGoogleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.78rem', fontWeight: 700, color: subtitleColor, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Google Email or Phone
-                </label>
-                <input
-                  type="email"
-                  placeholder="Enter your Google email (e.g. yourname@gmail.com)"
-                  value={googleEmail}
-                  onChange={(e) => setGoogleEmail(e.target.value)}
-                  required
-                  style={{
-                    height: '48px',
-                    borderRadius: '12px',
-                    padding: '0 14px',
-                    background: isDark ? 'rgba(20, 28, 20, 0.85)' : '#ffffff',
-                    border: isDark ? '1px solid rgba(132, 169, 90, 0.25)' : '1px solid #cbd5e1',
-                    color: titleColor,
-                    fontSize: '0.94rem',
-                    outline: 'none',
-                    width: '100%',
-                    boxSizing: 'border-box',
-                  }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.78rem', fontWeight: 700, color: subtitleColor, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Google Password
-                </label>
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  value={googlePassword}
-                  onChange={(e) => setGooglePassword(e.target.value)}
-                  required
-                  style={{
-                    height: '48px',
-                    borderRadius: '12px',
-                    padding: '0 14px',
-                    background: isDark ? 'rgba(20, 28, 20, 0.85)' : '#ffffff',
-                    border: isDark ? '1px solid rgba(132, 169, 90, 0.25)' : '1px solid #cbd5e1',
-                    color: titleColor,
-                    fontSize: '0.94rem',
-                    outline: 'none',
-                    width: '100%',
-                    boxSizing: 'border-box',
-                  }}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={googleAuthLoading}
-                style={{
-                  height: '50px',
-                  borderRadius: '14px',
-                  background: 'linear-gradient(135deg, #1a73e8 0%, #1557b0 100%)',
-                  color: '#ffffff',
-                  border: 'none',
-                  fontWeight: 800,
-                  fontSize: '0.98rem',
-                  cursor: googleAuthLoading ? 'not-allowed' : 'pointer',
-                  opacity: googleAuthLoading ? 0.7 : 1,
-                  boxShadow: '0 8px 24px rgba(26, 115, 232, 0.35)',
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  marginTop: '0.5rem',
-                }}
-              >
-                {googleAuthLoading ? 'Authenticating with Google...' : 'Sign In & Access Dashboard'}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

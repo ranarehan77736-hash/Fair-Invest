@@ -16,7 +16,7 @@ function LiveChatWidget({ isOpen: controlledOpen, onOpenChange }) {
   const [roomKey, setRoomKey] = useState('')
   const [connecting, setConnecting] = useState(false)
   const [messages, setMessages] = useState([
-    { id: 1, from: 'bot', text: 'Hi! I am HorizonInvest support. How can I help today?' },
+    { id: 1, from: 'bot', text: 'Hi! I am FairInvest support. How can I help today?' },
   ])
 
   useEffect(() => {

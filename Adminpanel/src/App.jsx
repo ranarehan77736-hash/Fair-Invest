@@ -15,7 +15,12 @@ import SocialLinksPage from './pages/SocialLinksPage.jsx'
 import ChatRoomsPage from './pages/ChatRoomsPage.jsx'
 
 function ProtectedRoute() {
-  // Login temporarily bypassed for direct dashboard access
+  const { isAuthenticated } = useAdmin()
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+
   return <Outlet />
 }
 
@@ -28,7 +33,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/login" element={<Navigate to="/" replace />} />
+      <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<AdminLayout />}>
           <Route index element={<DashboardPage />} />
@@ -45,7 +50,7 @@ function App() {
           <Route path="/chat-rooms" element={<ChatRoomsPage />} />
         </Route>
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
     </Routes>
   )
 }

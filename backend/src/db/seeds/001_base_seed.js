@@ -65,7 +65,7 @@ exports.seed = async function seed(knex) {
     {
       slug: "starter",
       name: "Starter Plan",
-      min_amount: 100,
+      min_amount: 1,
       max_amount: 999,
       duration_days: 365,
       daily_return_percent: 2,
@@ -100,6 +100,15 @@ exports.seed = async function seed(knex) {
     await knex("social_links").insert([
       { platform: "whatsapp", url: "https://chat.whatsapp.com/", is_active: true },
       { platform: "telegram", url: "https://t.me/horizoneinvest", is_active: true },
+    ]);
+  }
+
+  const hasSiteLinksTable = await knex.schema.hasTable("site_links");
+  if (hasSiteLinksTable) {
+    await knex("site_links").del();
+    await knex("site_links").insert([
+      { title: "Official WhatsApp Channel", url: "https://whatsapp.com", sort_order: 1, is_active: 1 },
+      { title: "Telegram VIP Community", url: "https://telegram.org", sort_order: 2, is_active: 1 },
     ]);
   }
 };

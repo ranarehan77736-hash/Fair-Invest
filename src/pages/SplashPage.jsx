@@ -52,10 +52,10 @@ function SplashPage() {
           animate={{ scale: [1, 1.2, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <img className="splash-logo-img" src={brandLogo} alt="HorizoneInvest" />
+          <img className="splash-logo-img" src={brandLogo} alt="FairInvest" />
         </motion.div>
         <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          HorizonInvest
+          FairInvest
         </motion.h1>
         <motion.p
           className="splash-tagline"

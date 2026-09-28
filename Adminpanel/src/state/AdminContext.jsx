@@ -4,8 +4,8 @@ import { API_BASE, apiRequest, clearTokens, getAccessToken, setTokens } from '..
 const AdminContext = createContext(null)
 
 export function AdminProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(true)
-  const [admin, setAdmin] = useState({ id: 1, name: 'Admin User', email: 'admin@horizoneinvest.com', role: 'admin' })
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!getAccessToken())
+  const [admin, setAdmin] = useState(null)
   const [metrics, setMetrics] = useState(null)
   const [users, setUsers] = useState([])
   const [transactions, setTransactions] = useState([])
@@ -24,16 +24,19 @@ export function AdminProvider({ children }) {
   })
 
   const bootstrap = useCallback(async () => {
+    const token = getAccessToken()
+    if (!token) {
+      setIsAuthenticated(false)
+      setAdmin(null)
+      return { ok: false, message: 'Not logged in' }
+    }
     try {
       let mePayload = null
       try {
-        if (getAccessToken()) {
-          const meRes = await apiRequest('/users/me')
-          mePayload = meRes?.data || null
-        }
+        const meRes = await apiRequest('/users/me')
+        mePayload = meRes?.data || null
       } catch (error) {
-        // Suppress auth error to allow direct dashboard access
-        console.warn('Bootstrap auth check bypassed:', error.message)
+        console.warn('Bootstrap auth check warning:', error.message)
       }
 
       const endpoints = [
@@ -67,7 +70,7 @@ export function AdminProvider({ children }) {
         return fallback
       }
 
-      setAdmin(mePayload)
+      setAdmin(mePayload || { id: 1, name: 'Admin User', email: 'admin@fairinvest.com', role: 'admin' })
       setMetrics(unwrap(byKey.metrics, null))
       setUsers(unwrap(byKey.users, []))
       setTransactions(unwrap(byKey.transactions, []))
@@ -78,10 +81,7 @@ export function AdminProvider({ children }) {
       setSocialLinks({ items: unwrap(byKey.socialLinks, []) })
       setPaymentAccounts(unwrap(byKey.paymentAccounts, []))
 
-      if (byKey.users.status === 'rejected') {
-        return { ok: false, message: byKey.users.reason?.message || 'Failed to load users from live API.' }
-      }
-
+      setIsAuthenticated(true)
       return { ok: true }
     } catch (error) {
       return { ok: false, message: error.message }
@@ -100,8 +100,7 @@ export function AdminProvider({ children }) {
         }
         setTokens(res.data.accessToken, res.data.refreshToken)
         setIsAuthenticated(true)
-        const boot = await bootstrap()
-        if (!boot.ok) return boot
+        await bootstrap()
         return { ok: true, message: 'Admin login successful.' }
       } catch (error) {
         return { ok: false, message: error.message }
@@ -123,8 +122,8 @@ export function AdminProvider({ children }) {
       // ignore
     }
     clearTokens()
-    // Login bypass: keep session active for dashboard preview
-    setIsAuthenticated(true)
+    setIsAuthenticated(false)
+    setAdmin(null)
   }, [])
 
   const blockUser = useCallback(

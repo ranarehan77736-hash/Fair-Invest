@@ -301,47 +301,24 @@ export function AppProvider({ children }) {
         method: 'POST',
         body: { email: normalized, password },
       })
+      if (!response.ok) {
+        return { ok: false, message: response.message || 'Invalid email or password.' }
+      }
       setTokens(response.data.accessToken, response.data.refreshToken)
       setIsAuthenticated(true)
       setIsBootstrapping(false)
-      const userProfile = {
-        id: response.data?.user?.id || `user-${Date.now()}`,
-        name: response.data?.user?.name || normalized.split('@')[0] || 'Investor',
+      const userProfile = response.data?.user || {
+        id: `user-${Date.now()}`,
+        name: normalized.split('@')[0] || 'Investor',
         email: normalized,
-        balance: Number(response.data?.user?.balance || 0),
+        balance: 0,
       }
       localStorage.setItem('fairinvest-local-user', JSON.stringify(userProfile))
       setUser((prev) => ({ ...prev, ...userProfile }))
       refreshCoreData().catch(() => { })
       return { ok: true, message: response.message || 'Login successful.' }
     } catch (error) {
-      const isNetworkErr =
-        error?.name === 'TypeError' ||
-        String(error?.message || '').toLowerCase().includes('fetch') ||
-        String(error?.message || '').toLowerCase().includes('network') ||
-        String(error?.message || '').toLowerCase().includes('cors')
-
-      if (isNetworkErr) {
-        const mockToken = `local-session-${Date.now()}`
-        setTokens(mockToken, mockToken)
-        setIsAuthenticated(true)
-        setIsBootstrapping(false)
-        const namePart = normalized.split('@')[0] || 'Investor'
-        const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)
-        const localUser = {
-          id: `local-${Date.now()}`,
-          name: capitalizedName,
-          email: normalized || 'user@fairinvest.com',
-          balance: 0,
-          totalEarnings: 0,
-          totalDeposits: 0,
-          activeInvestments: 0,
-        }
-        localStorage.setItem('fairinvest-local-user', JSON.stringify(localUser))
-        setUser((prev) => ({ ...emptyUser, ...prev, ...localUser }))
-        return { ok: true, message: 'Login successful!' }
-      }
-      return { ok: false, message: error.message || 'Login failed.' }
+      return { ok: false, message: error.message || 'Invalid email or password.' }
     }
   }
 

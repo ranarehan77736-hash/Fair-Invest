@@ -22,12 +22,49 @@ function getAccessToken() {
   return accessToken
 }
 
+const DEFAULT_MOCK_USERS = {
+  'ranarehan77736@gmail.com': {
+    id: 'user-2',
+    name: 'Rana Rehan',
+    email: 'ranarehan77736@gmail.com',
+    password: 'Admin@12345',
+    balance: 0.00,
+    lockedBalance: 0.00,
+    totalEarnings: 0.00,
+    totalDeposits: 0.00,
+    activeInvestments: 0,
+  },
+  'admin@fairinvest.com': {
+    id: 'user-1',
+    name: 'Admin User',
+    email: 'admin@fairinvest.com',
+    password: 'Admin@12345',
+    balance: 0.00,
+    lockedBalance: 0.00,
+    totalEarnings: 0.00,
+    totalDeposits: 0.00,
+    activeInvestments: 0,
+  },
+  'demo@fairinvest.com': {
+    id: 'user-3',
+    name: 'Demo User',
+    email: 'demo@fairinvest.com',
+    password: 'password123',
+    balance: 0.00,
+    lockedBalance: 0.00,
+    totalEarnings: 0.00,
+    totalDeposits: 0.00,
+    activeInvestments: 0,
+  },
+}
+
 function getStoredUsers() {
   try {
     const raw = localStorage.getItem('fairinvest-users-db')
-    return raw ? JSON.parse(raw) : {}
+    const parsed = raw ? JSON.parse(raw) : {}
+    return { ...DEFAULT_MOCK_USERS, ...parsed }
   } catch {
-    return {}
+    return { ...DEFAULT_MOCK_USERS }
   }
 }
 
@@ -53,18 +90,34 @@ function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
     }
   }
 
-  if (path === '/auth/login' || path === '/auth/register') {
-    const mockToken = `local-token-${Date.now()}`
-    setTokens(mockToken, mockToken)
-
+  if (path === '/auth/login') {
     const storedUsers = getStoredUsers()
     const existingUser = storedUsers[normalizedEmail]
 
+    if (!existingUser) {
+      return {
+        ok: false,
+        status: 'error',
+        message: 'Invalid email or password. Please check your credentials or register.',
+      }
+    }
+
+    if (existingUser.password && body?.password !== existingUser.password) {
+      return {
+        ok: false,
+        status: 'error',
+        message: 'Invalid email or password. Please enter your correct password.',
+      }
+    }
+
+    const mockToken = `local-token-${Date.now()}`
+    setTokens(mockToken, mockToken)
+
     const userProfile = {
       id: existingUser?.id || `user-${Date.now()}`,
-      name: body?.name || existingUser?.name || capitalizedName,
+      name: existingUser?.name || capitalizedName,
       email: normalizedEmail,
-      phone: body?.phone || existingUser?.phone || '',
+      phone: existingUser?.phone || '',
       balance: existingUser?.balance ?? 0.00,
       lockedBalance: existingUser?.lockedBalance ?? 0.00,
       totalEarnings: existingUser?.totalEarnings ?? 0.00,
@@ -72,7 +125,6 @@ function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
       activeInvestments: existingUser?.activeInvestments ?? 0,
     }
 
-    // Store user credentials and record in localStorage
     saveUserRecord(normalizedEmail, {
       ...userProfile,
       password: body?.password || existingUser?.password || '',
@@ -87,7 +139,46 @@ function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
     return {
       ok: true,
       status: 'success',
-      message: path === '/auth/login' ? 'Login successful!' : 'Registration successful!',
+      message: 'Login successful!',
+      data: {
+        accessToken: mockToken,
+        refreshToken: mockToken,
+        user: userProfile,
+      },
+    }
+  }
+
+  if (path === '/auth/register') {
+    const mockToken = `local-token-${Date.now()}`
+    setTokens(mockToken, mockToken)
+
+    const userProfile = {
+      id: `user-${Date.now()}`,
+      name: body?.name || capitalizedName,
+      email: normalizedEmail,
+      phone: body?.phone || '',
+      balance: 0.00,
+      lockedBalance: 0.00,
+      totalEarnings: 0.00,
+      totalDeposits: 0.00,
+      activeInvestments: 0,
+    }
+
+    saveUserRecord(normalizedEmail, {
+      ...userProfile,
+      password: body?.password || '',
+    })
+
+    localStorage.setItem('fairinvest-local-user', JSON.stringify(userProfile))
+    localStorage.setItem('fairinvest-saved-email', normalizedEmail)
+    if (body?.password) {
+      localStorage.setItem('fairinvest-saved-password', body.password)
+    }
+
+    return {
+      ok: true,
+      status: 'success',
+      message: 'Registration successful!',
       data: {
         accessToken: mockToken,
         refreshToken: mockToken,
@@ -140,8 +231,8 @@ function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
           id: 1,
           slug: 'starter',
           name: 'Starter Growth Plan',
-          minAmount: 100,
-          maxAmount: 1000,
+          minAmount: 1,
+          maxAmount: 999,
           durationDays: 30,
           dailyReturn: 1.5,
           totalReturn: 145,
@@ -311,8 +402,46 @@ function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
 }
 
 async function request(path, { method = 'GET', body } = {}) {
-  // Completely disconnected from backend: always use local frontend mock handler
-  return handleMockRequest(path, { method, body })
+  const headers = {
+    'Content-Type': 'application/json',
+  }
+  const token = getAccessToken()
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+
+  try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 4000)
+
+    const res = await fetch(`${API_BASE}${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    })
+    clearTimeout(timeoutId)
+
+    const data = await res.json().catch(() => ({}))
+
+    if (!res.ok) {
+      return {
+        ok: false,
+        status: 'error',
+        message: data?.message || data?.error || 'Authentication failed. Please check your credentials.',
+        data: data?.data || null,
+      }
+    }
+
+    return {
+      ok: true,
+      status: 'success',
+      message: data?.message || 'Success',
+      data: data?.data ?? data,
+    }
+  } catch {
+    return handleMockRequest(path, { method, body })
+  }
 }
 
 export { request, setTokens, clearTokens, getAccessToken, API_BASE }
