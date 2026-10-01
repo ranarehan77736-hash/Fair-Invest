@@ -340,7 +340,7 @@ function TransactionsPage() {
                 paddingLeft: '42px',
                 paddingRight: '14px',
                 borderRadius: '14px',
-                background: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                background: isDark ? '#141c14' : '#ffffff',
                 border: isDark ? '1px solid rgba(132, 169, 90, 0.3)' : '1px solid rgba(122, 159, 76, 0.3)',
                 color: isDark ? '#f0f4ef' : '#141e14',
                 fontSize: '0.88rem',
@@ -350,12 +350,12 @@ function TransactionsPage() {
                 cursor: 'pointer',
               }}
             >
-              <option value="all">All Category Types</option>
-              <option value="deposit">Deposit</option>
-              <option value="investment">Investment</option>
-              <option value="earning">Earning</option>
-              <option value="commission">Commission</option>
-              <option value="withdraw">Withdraw</option>
+              <option value="all" style={{ background: isDark ? '#141c14' : '#ffffff', color: isDark ? '#f0f4ef' : '#141e14' }}>All Category Types</option>
+              <option value="deposit" style={{ background: isDark ? '#141c14' : '#ffffff', color: isDark ? '#f0f4ef' : '#141e14' }}>Deposit</option>
+              <option value="investment" style={{ background: isDark ? '#141c14' : '#ffffff', color: isDark ? '#f0f4ef' : '#141e14' }}>Investment</option>
+              <option value="earning" style={{ background: isDark ? '#141c14' : '#ffffff', color: isDark ? '#f0f4ef' : '#141e14' }}>Earning</option>
+              <option value="commission" style={{ background: isDark ? '#141c14' : '#ffffff', color: isDark ? '#f0f4ef' : '#141e14' }}>Commission</option>
+              <option value="withdraw" style={{ background: isDark ? '#141c14' : '#ffffff', color: isDark ? '#f0f4ef' : '#141e14' }}>Withdraw</option>
             </select>
           </div>
 
@@ -371,7 +371,7 @@ function TransactionsPage() {
                 paddingLeft: '42px',
                 paddingRight: '14px',
                 borderRadius: '14px',
-                background: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                background: isDark ? '#141c14' : '#ffffff',
                 border: isDark ? '1px solid rgba(132, 169, 90, 0.3)' : '1px solid rgba(122, 159, 76, 0.3)',
                 color: isDark ? '#f0f4ef' : '#141e14',
                 fontSize: '0.88rem',
@@ -381,11 +381,11 @@ function TransactionsPage() {
                 cursor: 'pointer',
               }}
             >
-              <option value="all">All Statuses</option>
-              <option value="completed">Completed</option>
-              <option value="pending">Pending</option>
-              <option value="processing">Processing</option>
-              <option value="failed">Failed</option>
+              <option value="all" style={{ background: isDark ? '#141c14' : '#ffffff', color: isDark ? '#f0f4ef' : '#141e14' }}>All Statuses</option>
+              <option value="completed" style={{ background: isDark ? '#141c14' : '#ffffff', color: isDark ? '#f0f4ef' : '#141e14' }}>Completed</option>
+              <option value="pending" style={{ background: isDark ? '#141c14' : '#ffffff', color: isDark ? '#f0f4ef' : '#141e14' }}>Pending</option>
+              <option value="processing" style={{ background: isDark ? '#141c14' : '#ffffff', color: isDark ? '#f0f4ef' : '#141e14' }}>Processing</option>
+              <option value="failed" style={{ background: isDark ? '#141c14' : '#ffffff', color: isDark ? '#f0f4ef' : '#141e14' }}>Failed</option>
             </select>
           </div>
 

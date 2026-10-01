@@ -154,83 +154,89 @@ function LoginPage() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label style={{ fontSize: '0.78rem', fontWeight: 700, color: subtitleColor, textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'color 0.25s ease' }}>
-              Admin Email
-            </label>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                height: '48px',
-                borderRadius: '12px',
-                background: inputBg,
-                border: inputBorder,
-                padding: '0 14px',
-                color: inputText,
-                gap: '10px',
-                transition: 'all 0.25s ease',
-              }}
-            >
-              <Mail size={18} style={{ color: iconColor, flexShrink: 0 }} />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@fairinvest.com"
-                required
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 700, color: subtitleColor, textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'color 0.25s ease' }}>
+                Admin Email
+              </label>
+              <div
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  color: inputText,
-                  fontSize: '0.92rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: '48px',
+                  borderRadius: '12px',
+                  background: inputBg,
+                  border: inputBorder,
+                  padding: '0 8px 0 14px',
+                  gap: '10px',
+                  transition: 'all 0.25s ease',
                 }}
-              />
+              >
+                <Mail size={18} style={{ color: iconColor, flexShrink: 0 }} />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@fairinvest.com"
+                  required
+                  style={{
+                    flex: 1,
+                    height: '36px',
+                    borderRadius: '8px',
+                    background: 'rgba(238, 244, 255, 0.96)',
+                    border: 'none',
+                    outline: 'none',
+                    color: '#0f172a',
+                    fontSize: '0.92rem',
+                    fontWeight: 600,
+                    padding: '0 10px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
             </div>
-          </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label style={{ fontSize: '0.78rem', fontWeight: 700, color: subtitleColor, textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'color 0.25s ease' }}>
-              Password
-            </label>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                height: '48px',
-                borderRadius: '12px',
-                background: inputBg,
-                border: inputBorder,
-                padding: '0 14px',
-                color: inputText,
-                gap: '10px',
-                transition: 'all 0.25s ease',
-              }}
-            >
-              <Lock size={18} style={{ color: iconColor, flexShrink: 0 }} />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 700, color: subtitleColor, textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'color 0.25s ease' }}>
+                Password
+              </label>
+              <div
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  color: inputText,
-                  fontSize: '0.92rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: '48px',
+                  borderRadius: '12px',
+                  background: inputBg,
+                  border: inputBorder,
+                  padding: '0 8px 0 14px',
+                  gap: '10px',
+                  transition: 'all 0.25s ease',
                 }}
-              />
+              >
+                <Lock size={18} style={{ color: iconColor, flexShrink: 0 }} />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  style={{
+                    flex: 1,
+                    height: '36px',
+                    borderRadius: '8px',
+                    background: 'rgba(238, 244, 255, 0.96)',
+                    border: 'none',
+                    outline: 'none',
+                    color: '#0f172a',
+                    fontSize: '0.92rem',
+                    fontWeight: 600,
+                    padding: '0 10px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
         <button
           type="submit"

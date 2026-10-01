@@ -48,11 +48,19 @@ function InvestmentPlansPage() {
     isDark = true
   }
 
-  const iconMap = { starter: IoFlashOutline, professional: RiVipCrownLine, elite: RiRocket2Line }
+  const iconMap = {
+    starter: IoFlashOutline,
+    professional: RiVipCrownLine,
+    pro: RiVipCrownLine,
+    elite: RiRocket2Line,
+    institutional: RiRocket2Line,
+  }
   const toneMap = {
     starter: 'starter',
     professional: 'pro',
+    pro: 'pro',
     elite: 'elite',
+    institutional: 'elite',
   }
 
   const planCoverImage = (plan) => {
@@ -248,8 +256,13 @@ function InvestmentPlansPage() {
 
                 {/* Action Button */}
                 <button
-                  className={`plan-cta-btn ${toneMap[plan.slug]}`}
+                  className={`plan-cta-btn ${toneMap[plan.slug] || 'elite'}`}
                   onClick={() => quickInvest(plan)}
+                  style={{
+                    background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                    color: '#ffffff',
+                    boxShadow: '0 6px 20px rgba(16, 185, 129, 0.3)',
+                  }}
                 >
                   Invest Now <FiArrowUpRight size={18} />
                 </button>

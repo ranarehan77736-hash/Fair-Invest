@@ -1986,7 +1986,9 @@ th {
   height: 48px;
   border-radius: 14px;
   border: none;
-  color: #ffffff;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
   font-size: 0.95rem;
   font-weight: 700;
   display: flex;
@@ -2001,12 +2003,15 @@ th {
 .plan-cta-btn.starter {
   background: linear-gradient(135deg, #10b981, #14b8a6);
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
+  color: #ffffff !important;
 }
 
 .plan-cta-btn.pro,
-.plan-cta-btn.elite {
+.plan-cta-btn.elite,
+.plan-cta-btn.institutional {
   background: linear-gradient(135deg, #059669 0%, #10b981 100%);
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+  color: #ffffff !important;
 }
 
 .plan-cta-btn:hover {
@@ -4885,4 +4890,16 @@ body[data-theme='light'] .deposit-screenshot-callout strong {
 
 body[data-theme='light'] .deposit-screenshot-callout p {
   color: #854d0e;
+}
+
+/* Global Select & Option Dark/Light Mode Styling */
+select option {
+  background-color: #141c14 !important;
+  color: #f0f4ef !important;
+}
+
+body[data-theme='light'] select option,
+body.light select option {
+  background-color: #ffffff !important;
+  color: #141e14 !important;
 }
