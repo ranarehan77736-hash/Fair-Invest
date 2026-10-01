@@ -17,17 +17,32 @@ if (!fs.existsSync(uploadsRoot)) {
   fs.mkdirSync(uploadsRoot, { recursive: true });
 }
 
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (env.isOriginAllowed(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error(`Not allowed by CORS: ${origin}`));
-    },
-    credentials: true,
-  }),
-);
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || env.isOriginAllowed(origin)) {
+      return callback(null, true);
+    }
+    if (String(origin).includes("fairinvest.site")) {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
+  credentials: true,
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Origin",
+    "X-Requested-With",
+    "Content-Type",
+    "Accept",
+    "Authorization",
+    "X-Access-Token",
+    "X-HTTP-Authorization",
+  ],
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(
   helmet({
     // Allow frontend/admin domains to embed media served by API /uploads.

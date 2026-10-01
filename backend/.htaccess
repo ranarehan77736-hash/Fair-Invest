@@ -1,20 +1,30 @@
 # ==============================================================================
 # FairInvest Backend API cPanel / LiteSpeed Configuration
-# Ensures Authorization header is passed to Node.js backend
+# Ensures CORS and Authorization headers are handled properly by LiteSpeed/Apache
 # ==============================================================================
+
+# 1. Global CORS Headers (Guarantees CORS headers even if LiteSpeed intercepts)
+<IfModule mod_headers.c>
+  Header always set Access-Control-Allow-Origin "https://fairinvest.site"
+  Header always set Access-Control-Allow-Credentials "true"
+  Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
+  Header always set Access-Control-Allow-Headers "Authorization, X-Access-Token, X-HTTP-Authorization, Content-Type, Accept, Origin, X-Requested-With"
+</IfModule>
+
+# 2. Authorization and Preflight Handling
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # Pass Authorization header to Node.js application (prevents 401 on Apache/LiteSpeed)
+  # Pass Authorization headers to Node.js backend
   RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
   RewriteRule .* - [E=HTTP_X_ACCESS_TOKEN:%{HTTP:X-Access-Token}]
 
-  # If not handled by Passenger module directly, rewrite non-files to app.js
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^(.*)$ app.js [QSA,L]
+  # Fast-respond 200 to CORS preflight OPTIONS requests
+  RewriteCond %{REQUEST_METHOD} OPTIONS
+  RewriteRule ^(.*)$ $1 [R=200,L]
 </IfModule>
 
 # Disable directory browsing
 Options -Indexes
+
 
