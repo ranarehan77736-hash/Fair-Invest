@@ -98,19 +98,45 @@ exports.seed = async function seed(knex) {
   let paymentAccountId = null;
   if (hasPaymentAccountsTable) {
     await knex("payment_accounts").del();
-    const [id] = await knex("payment_accounts").insert([
+    const insertedAccounts = await knex("payment_accounts").insert([
       {
-        method: "easypaisa",
-        display_name: "Easypaisa Official",
-        account_title: "Fair Invest Admin",
-        account_number: "03001234567",
-        phone: "+92 300 1234567",
-        instructions: "Please send exact deposit amount and attach screenshot as proof.",
+        id: 1,
+        method: "digit_plus",
+        display_name: "Digitt+ / Raast (Scan & Pay)",
+        account_title: "MashAllah Bhatti Mobilee",
+        account_number: "346584733",
+        phone: "346584733",
+        instructions: "Scan the QR code or enter Till ID 346584733 in Digitt+ / Raast / banking apps. Make payment, take screenshot, and upload proof below.",
+        logo_path: "/images/digitt_plus_scan_pay.png",
         is_active: true,
         sort_order: 1,
       },
+      {
+        id: 2,
+        method: "bank_transfer",
+        display_name: "Meezan Bank",
+        account_title: "FairInvest Treasury",
+        account_number: "0101-0203040506",
+        iban: "PK36MEZN0001010203040506",
+        instructions: "Send deposit to this account and upload the receipt screenshot.",
+        logo_path: "/bank-logos/meezan.png",
+        is_active: true,
+        sort_order: 2,
+      },
+      {
+        id: 3,
+        method: "easypaisa",
+        display_name: "Easypaisa Official",
+        account_title: "FairInvest Official",
+        account_number: "0300-1234567",
+        phone: "0300-1234567",
+        instructions: "Send via Easypaisa and submit transaction ID with screenshot.",
+        logo_path: "/bank-logos/easypaisa.png",
+        is_active: true,
+        sort_order: 3,
+      },
     ]);
-    paymentAccountId = id || 1;
+    paymentAccountId = (Array.isArray(insertedAccounts) ? insertedAccounts[0] : insertedAccounts) || 1;
   }
 
   await knex("deposits").insert([

@@ -131,9 +131,71 @@ export async function apiRequest(path, { method = 'GET', body, _retry = true } =
       } else if (path.includes('/admin/metrics')) {
         fallbackData = { totalUsers: 2, activeUsers: 2, totalDeposits: 350, totalWithdrawals: 50, totalInvestments: 200, pendingDeposits: 1, pendingWithdrawals: 1 }
       } else if (path.includes('/admin/payment-accounts')) {
-        fallbackData = [
-          { id: 1, method: 'easypaisa', display_name: 'Easypaisa Official', account_title: 'Fair Invest Admin', account_number: '03001234567', phone: '+92 300 1234567', is_active: true, sort_order: 1 },
-        ]
+        let storedAccounts = null
+        try {
+          const raw = localStorage.getItem('fairinvest-payment-accounts')
+          if (raw) storedAccounts = JSON.parse(raw)
+        } catch {
+          void 0
+        }
+        fallbackData = (Array.isArray(storedAccounts) && storedAccounts.length > 0)
+          ? storedAccounts
+          : [
+              {
+                id: 1,
+                method: 'digit_plus',
+                display_name: 'Digitt+ / Raast (Scan & Pay)',
+                displayName: 'Digitt+ / Raast (Scan & Pay)',
+                account_title: 'MashAllah Bhatti Mobilee',
+                accountTitle: 'MashAllah Bhatti Mobilee',
+                account_number: '346584733',
+                accountNumber: '346584733',
+                phone: '346584733',
+                instructions: 'Scan the QR code or enter Till ID 346584733 in Digitt+ / Raast / banking apps. Make payment, take screenshot, and upload proof below.',
+                logo_path: '/images/digitt_plus_scan_pay.png',
+                logoPath: '/images/digitt_plus_scan_pay.png',
+                is_active: true,
+                isActive: true,
+                sort_order: 1,
+                sortOrder: 1,
+              },
+              {
+                id: 2,
+                method: 'bank_transfer',
+                display_name: 'Meezan Bank',
+                displayName: 'Meezan Bank',
+                account_title: 'FairInvest Treasury',
+                accountTitle: 'FairInvest Treasury',
+                account_number: '0101-0203040506',
+                accountNumber: '0101-0203040506',
+                iban: 'PK36MEZN0001010203040506',
+                instructions: 'Send deposit to this account and upload the receipt screenshot.',
+                logo_path: '/bank-logos/meezan.png',
+                logoPath: '/bank-logos/meezan.png',
+                is_active: true,
+                isActive: true,
+                sort_order: 2,
+                sortOrder: 2,
+              },
+              {
+                id: 3,
+                method: 'easypaisa',
+                display_name: 'Easypaisa Official',
+                displayName: 'Easypaisa Official',
+                account_title: 'FairInvest Official',
+                accountTitle: 'FairInvest Official',
+                account_number: '0300-1234567',
+                accountNumber: '0300-1234567',
+                phone: '0300-1234567',
+                instructions: 'Send via Easypaisa and submit transaction ID with screenshot.',
+                logo_path: '/bank-logos/easypaisa.png',
+                logoPath: '/bank-logos/easypaisa.png',
+                is_active: true,
+                isActive: true,
+                sort_order: 3,
+                sortOrder: 3,
+              },
+            ]
       } else if (path.includes('/admin/social-links')) {
         fallbackData = [
           { id: 1, platform: 'whatsapp', url: 'https://whatsapp.com/channel/0029Vb9YnsS4dTnBGIVclZ1r', is_active: true },

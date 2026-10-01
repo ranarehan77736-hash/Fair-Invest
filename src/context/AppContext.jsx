@@ -83,9 +83,72 @@ export function AppProvider({ children }) {
     hoursRemaining: 0,
   })
   const [deposits, setDeposits] = useState([])
-  const [paymentAccounts, setPaymentAccounts] = useState([])
+
+const DEFAULT_PAYMENT_ACCOUNTS = [
+  {
+    id: 1,
+    method: 'digit_plus',
+    displayName: 'Digitt+ / Raast (Scan & Pay)',
+    accountTitle: 'MashAllah Bhatti Mobilee',
+    accountNumber: '346584733',
+    phone: '346584733',
+    instructions: 'Scan the QR code or enter Till ID 346584733 in Digitt+ / Raast / banking apps. Make payment, take screenshot, and upload proof below.',
+    logoPath: '/images/digitt_plus_scan_pay.png',
+    sortOrder: 1,
+    isActive: true,
+  },
+  {
+    id: 2,
+    method: 'bank_transfer',
+    displayName: 'Meezan Bank',
+    accountTitle: 'FairInvest Treasury',
+    accountNumber: '0101-0203040506',
+    iban: 'PK36MEZN0001010203040506',
+    instructions: 'Send deposit to this account and upload the receipt screenshot.',
+    logoPath: '/bank-logos/meezan.png',
+    sortOrder: 2,
+    isActive: true,
+  },
+  {
+    id: 3,
+    method: 'easypaisa',
+    displayName: 'Easypaisa Official',
+    accountTitle: 'FairInvest Official',
+    accountNumber: '0300-1234567',
+    phone: '0300-1234567',
+    instructions: 'Send via Easypaisa and submit transaction ID with screenshot.',
+    logoPath: '/bank-logos/easypaisa.png',
+    sortOrder: 3,
+    isActive: true,
+  },
+]
+
+  const [paymentAccounts, setPaymentAccounts] = useState(() => {
+    try {
+      const saved = localStorage.getItem('fairinvest-payment-accounts')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed
+      }
+    } catch {
+      void 0
+    }
+    return DEFAULT_PAYMENT_ACCOUNTS
+  })
   const [notifications, setNotifications] = useState([])
   const [socialLinks, setSocialLinks] = useState([])
+
+  const fetchPaymentAccounts = useCallback(async () => {
+    try {
+      const response = await request('/payment-accounts')
+      if (Array.isArray(response?.data) && response.data.length > 0) {
+        setPaymentAccounts(response.data)
+        localStorage.setItem('fairinvest-payment-accounts', JSON.stringify(response.data))
+      }
+    } catch {
+      // keep current
+    }
+  }, [])
 
   const fetchSocialLinks = useCallback(async () => {
     try {
@@ -242,13 +305,17 @@ export function AppProvider({ children }) {
       },
     )
     setDeposits(depositsRes.data || [])
-    setPaymentAccounts(paymentAccountsRes.data || [])
+    if (Array.isArray(paymentAccountsRes?.data) && paymentAccountsRes.data.length > 0) {
+      setPaymentAccounts(paymentAccountsRes.data)
+      localStorage.setItem('fairinvest-payment-accounts', JSON.stringify(paymentAccountsRes.data))
+    }
     setNotifications(notificationsRes.data || [])
   }, [loadReferralExtras])
 
   useEffect(() => {
     let active = true
     const bootstrap = async () => {
+      fetchPaymentAccounts().catch(() => { })
       const socialLinksPromise = fetchSocialLinks()
       const token = getAccessToken()
 
@@ -315,7 +382,7 @@ export function AppProvider({ children }) {
     return () => {
       active = false
     }
-  }, [fetchSocialLinks, refreshCoreData])
+  }, [fetchPaymentAccounts, fetchSocialLinks, refreshCoreData])
 
   const login = async ({ email, password }) => {
     const normalized = String(email || '').trim().toLowerCase()

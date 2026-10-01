@@ -362,12 +362,57 @@ function handleMockRequest(path, { method: _method = 'GET', body = {} } = {}) {
   }
 
   if (path === '/payment-accounts') {
+    const saved = localStorage.getItem('fairinvest-payment-accounts')
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return { ok: true, status: 'success', data: parsed }
+        }
+      } catch {
+        void 0
+      }
+    }
     return {
       ok: true,
       status: 'success',
       data: [
-        { id: 1, bankName: 'Meezan Bank', accountTitle: 'FairInvest Treasury', accountNumber: '0101-0203040506', iban: 'PK36MEZN0001010203040506' },
-        { id: 2, bankName: 'Easypaisa', accountTitle: 'FairInvest Official', accountNumber: '0300-1234567', iban: 'N/A' },
+        {
+          id: 1,
+          method: 'digit_plus',
+          displayName: 'Digitt+ / Raast (Scan & Pay)',
+          accountTitle: 'MashAllah Bhatti Mobilee',
+          accountNumber: '346584733',
+          phone: '346584733',
+          instructions: 'Scan the QR code or enter Till ID 346584733 in Digitt+ / Raast / banking apps. Make payment, take screenshot, and upload proof below.',
+          logoPath: '/images/digitt_plus_scan_pay.png',
+          sortOrder: 1,
+          isActive: true,
+        },
+        {
+          id: 2,
+          method: 'bank_transfer',
+          displayName: 'Meezan Bank',
+          accountTitle: 'FairInvest Treasury',
+          accountNumber: '0101-0203040506',
+          iban: 'PK36MEZN0001010203040506',
+          instructions: 'Send deposit to this account and upload the receipt screenshot.',
+          logoPath: '/bank-logos/meezan.png',
+          sortOrder: 2,
+          isActive: true,
+        },
+        {
+          id: 3,
+          method: 'easypaisa',
+          displayName: 'Easypaisa',
+          accountTitle: 'FairInvest Official',
+          accountNumber: '0300-1234567',
+          phone: '0300-1234567',
+          instructions: 'Send via Easypaisa and submit transaction ID with screenshot.',
+          logoPath: '/bank-logos/easypaisa.png',
+          sortOrder: 3,
+          isActive: true,
+        },
       ],
     }
   }
