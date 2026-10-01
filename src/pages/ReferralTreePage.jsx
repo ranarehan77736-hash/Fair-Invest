@@ -15,20 +15,24 @@ function ReferralTreePage() {
     commissionStructure,
   } =
     useAppContext()
-  const referralLink = `https://horizoneinvest.com/signup?ref=${user.referralCode}`
+  const activeReferralCode =
+    user.referralCode ||
+    (user.name ? `${user.name.replace(/[^a-zA-Z]/g, '').slice(0, 4).toUpperCase() || 'FAIR'}-${user.id || '101'}` : 'FAIR-VIP')
+  const referralOrigin = typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://fairinvest.site'
+  const referralLink = `${referralOrigin}/signup?ref=${activeReferralCode}`
   const stats = [
     { label: 'Total Referrals', value: referralCount, icon: FiUsers, tone: 'emerald' },
     {
       label: 'Active Referrals',
       value: referralTree.filter((item) => Number(item.level) === 1).length,
       icon: RiUserAddLine,
-      tone: 'cyan',
+      tone: 'emerald',
     },
     {
       label: 'Total Earnings',
       value: `$${Number(referralEarnings).toFixed(2)}`,
       icon: RiMoneyDollarCircleLine,
-      tone: 'violet',
+      tone: 'emerald',
     },
     {
       label: 'This Month',
@@ -38,11 +42,11 @@ function ReferralTreePage() {
           .reduce((acc, entry) => acc + Number(entry.amount || 0), 0),
       ).toFixed(2)}`,
       icon: FiGift,
-      tone: 'pink',
+      tone: 'emerald',
     },
   ]
 
-  const commissionLevels = commissionStructure.map((item, index) => {
+  const commissionLevels = commissionStructure.map((item) => {
     const members = referralTree.filter((entry) => Number(entry.level) === Number(item.level)).length
     const earnings = referralEntries
       .filter((entry) => Number(entry.ratePercent) === Number(item.ratePercent))
@@ -52,7 +56,7 @@ function ReferralTreePage() {
       members,
       rate: `${item.ratePercent}%`,
       earnings: `$${earnings.toFixed(2)}`,
-      tone: index === 0 ? 'emerald' : index === 1 ? 'cyan' : 'violet',
+      tone: 'emerald',
     }
   })
 
@@ -85,7 +89,7 @@ function ReferralTreePage() {
   return (
     <section className="page-grid referral-page mobile-friendly-page">
       <div className="glass-card referral-hero">
-        <span className="pill-badge violet">
+        <span className="pill-badge emerald">
           <FiGift size={14} /> Referral Program
         </span>
         <h2 className="page-title">Refer & Earn Commission</h2>
@@ -113,9 +117,9 @@ function ReferralTreePage() {
         <div className="ref-share-row">
           <div className="ref-share-box">
             <p className="muted small">Referral Code</p>
-            <code>{user.referralCode}</code>
+            <code>{activeReferralCode}</code>
           </div>
-          <button className="btn btn-primary" onClick={() => copyText(user.referralCode)}>
+          <button className="btn btn-primary" onClick={() => copyText(activeReferralCode)}>
             <FiCopy size={14} /> Copy Code
           </button>
         </div>
@@ -124,7 +128,7 @@ function ReferralTreePage() {
             <p className="muted small">Referral Link</p>
             <code>{referralLink}</code>
           </div>
-          <button className="btn btn-cyan" onClick={() => copyText(referralLink)}>
+          <button className="btn btn-primary" onClick={() => copyText(referralLink)}>
             <FiLink2 size={14} /> Copy Link
           </button>
         </div>

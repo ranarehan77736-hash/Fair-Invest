@@ -441,51 +441,49 @@ function LoginPage() {
               </p>
             </div>
 
-            {whatsappLink?.url ? (
-              <a
-                href={whatsappLink.url}
-                target="_blank"
-                rel="noreferrer"
+            <a
+              href={whatsappLink?.url || 'https://whatsapp.com/channel/0029Vb9YnsS4dTnBGIVclZ1r'}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                borderRadius: '14px',
+                background: whatsappBg,
+                border: whatsappBorder,
+                color: isDark ? '#9bc268' : '#5e7e37',
+                textDecoration: 'none',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <div
                 style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px',
+                  background: '#22c55e',
+                  color: '#090d16',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
-                  padding: '12px 16px',
-                  borderRadius: '14px',
-                  background: whatsappBg,
-                  border: whatsappBorder,
-                  color: isDark ? '#9bc268' : '#5e7e37',
-                  textDecoration: 'none',
-                  transition: 'all 0.2s ease',
+                  justifyContent: 'center',
+                  fontWeight: 800,
+                  flexShrink: 0,
+                  boxShadow: '0 4px 10px rgba(34, 197, 94, 0.3)',
                 }}
               >
-                <div
-                  style={{
-                    width: '38px',
-                    height: '38px',
-                    borderRadius: '10px',
-                    background: '#22c55e',
-                    color: '#090d16',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontWeight: 800,
-                    flexShrink: 0,
-                    boxShadow: '0 4px 10px rgba(34, 197, 94, 0.3)',
-                  }}
-                >
-                  <FaWhatsapp size={22} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <strong style={{ display: 'block', fontSize: '0.84rem', color: titleColor, fontWeight: 700, transition: 'color 0.25s ease' }}>
-                    Join FairInvest Official Channel
-                  </strong>
-                  <span style={{ fontSize: '0.74rem', color: subtitleColor, transition: 'color 0.25s ease' }}>
-                    Receive VIP signals & instant community updates
-                  </span>
-                </div>
-              </a>
-            ) : null}
+                <FaWhatsapp size={22} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <strong style={{ display: 'block', fontSize: '0.84rem', color: titleColor, fontWeight: 700, transition: 'color 0.25s ease' }}>
+                  Follow Fair invest Official Channel on WhatsApp
+                </strong>
+                <span style={{ fontSize: '0.74rem', color: subtitleColor, transition: 'color 0.25s ease' }}>
+                  Daily profit distributions, withdrawal proofs & announcements
+                </span>
+              </div>
+            </a>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
               <Input

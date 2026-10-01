@@ -35,10 +35,48 @@ function sanitizeEnvValue(value) {
   return trimmed;
 }
 
+const rawPort = process.env.PORT || 5000;
+const port = !isNaN(rawPort) && !isNaN(parseFloat(rawPort)) ? Number(rawPort) : rawPort;
+
+const rawClientUrl = process.env.CLIENT_URL || "https://fairinvest.site";
+const clientOrigins = rawClientUrl
+  .split(",")
+  .map((s) => s.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+
+const adminUrl = (process.env.ADMIN_URL || "").replace(/\/$/, "");
+const defaultAllowedOrigins = [
+  "https://fairinvest.site",
+  "https://www.fairinvest.site",
+  "http://fairinvest.site",
+  "http://www.fairinvest.site",
+  "https://api.fairinvest.site",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5000",
+  "http://localhost:3000",
+];
+
+const allowedOrigins = Array.from(
+  new Set([...clientOrigins, ...(adminUrl ? [adminUrl] : []), ...defaultAllowedOrigins])
+);
+
+function isOriginAllowed(origin) {
+  if (!origin) return true;
+  const cleanOrigin = origin.replace(/\/$/, "");
+  if (allowedOrigins.includes(cleanOrigin)) return true;
+  if (/^http:\/\/localhost:\d+$/.test(cleanOrigin)) return true;
+  if (/^https?:\/\/([a-z0-9-]+\.)*fairinvest\.site$/i.test(cleanOrigin)) return true;
+  return false;
+}
+
 const env = {
   nodeEnv: process.env.NODE_ENV || "development",
-  port: Number(process.env.PORT || 5000),
-  clientUrl: (process.env.CLIENT_URL || "https://horizoneinvest.com").replace(/\/$/, ""),
+  port,
+  clientUrl: clientOrigins[0] || "https://fairinvest.site",
+  adminUrl,
+  allowedOrigins,
+  isOriginAllowed,
   frontendRoot: process.env.FRONTEND_ROOT || "",
   jwtAccessSecret: process.env.JWT_ACCESS_SECRET || "dev_access_secret",
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || "dev_refresh_secret",

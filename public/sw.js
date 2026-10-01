@@ -1,4 +1,4 @@
-const CACHE_NAME = 'horizoneinvest-v4'
+const CACHE_NAME = 'fairinvest-v1'
 const APP_SHELL = ['/', '/index.html', '/icon.png', '/logo.png', '/manifest.webmanifest']
 
 function spaShellResponse() {

@@ -9,6 +9,7 @@
     "migrate": "node scripts/cleanMacOsJunk.js && knex migrate:latest --knexfile knexfile.js",
     "migrate:rollback": "knex migrate:rollback --knexfile knexfile.js",
     "seed": "knex seed:run --knexfile knexfile.js",
+    "reset:admin": "node reset-admin.js",
     "test": "cross-env NODE_ENV=test jest --runInBand"
   },
   "dependencies": {

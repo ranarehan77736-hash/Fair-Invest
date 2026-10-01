@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { clearTokens, getAccessToken, request, setTokens } from '../lib/api.js'
 import { formatDatePk } from '../lib/formatDatePk.js'
+import { investmentPlans as defaultInvestmentPlans } from '../data/mockData.js'
 
 const AppContext = createContext(null)
 
@@ -63,7 +64,7 @@ export function AppProvider({ children }) {
   const [user, setUser] = useState(emptyUser)
   const [transactions, setTransactions] = useState([])
   const [investments, setInvestments] = useState([])
-  const [investmentPlans, setInvestmentPlans] = useState([])
+  const [investmentPlans, setInvestmentPlans] = useState(defaultInvestmentPlans)
   const [referralTree, setReferralTree] = useState([])
   const [referralCount, setReferralCount] = useState(0)
   const [directReferralCount, setDirectReferralCount] = useState(0)
@@ -156,10 +157,14 @@ export function AppProvider({ children }) {
       0,
     )
 
+    const activeRefCode =
+      meRes?.data?.referralCode || referralsOverviewRes?.data?.code || ''
+
     if (meRes?.data) {
       setUser((prev) => ({
         ...prev,
         ...meRes.data,
+        referralCode: activeRefCode || prev.referralCode || '',
         balance: Number(meRes.data?.balance || 0),
         totalDeposits: depositsTotal,
         totalEarnings: earningsTotal,
@@ -169,13 +174,19 @@ export function AppProvider({ children }) {
     } else {
       setUser((prev) => ({
         ...prev,
+        referralCode: activeRefCode || prev.referralCode || '',
         totalDeposits: depositsTotal,
         totalEarnings: earningsTotal,
         activeInvestments: investmentsList.filter((item) => item.status === 'active').length,
       }))
     }
 
-    setInvestmentPlans(normalizePlans(plansRes.data || []))
+    const parsedPlans = normalizePlans(plansRes.data || [])
+    if (parsedPlans.length > 0) {
+      setInvestmentPlans(parsedPlans)
+    } else {
+      setInvestmentPlans((prev) => (prev.length > 0 ? prev : defaultInvestmentPlans))
+    }
     setInvestments(
       investmentsList.map((item) => ({
         id: `INV-${item.id}`,

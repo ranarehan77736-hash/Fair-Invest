@@ -24,7 +24,7 @@ function detectSocialPlatform(link) {
 }
 
 const DEFAULT_FALLBACK_LINKS = [
-  { id: 1, platform: 'whatsapp', title: 'Official WhatsApp Channel', url: 'https://whatsapp.com', label: 'Official WhatsApp Channel' },
+  { id: 1, platform: 'whatsapp', title: 'Follow the Fair invest Official channel on WhatsApp', url: 'https://whatsapp.com/channel/0029Vb9YnsS4dTnBGIVclZ1r', label: 'Follow Fair invest Official Channel' },
   { id: 2, platform: 'telegram', title: 'Telegram VIP Community', url: 'https://telegram.org', label: 'Telegram VIP Community' },
 ]
 

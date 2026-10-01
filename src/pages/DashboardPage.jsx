@@ -219,26 +219,26 @@ function DashboardPage() {
       label: 'Referrals',
       value: referralCount,
       icon: Users,
-      tone: 'rose',
+      tone: 'emerald',
       change: 'View tree',
       to: '/referral-tree',
       gradient: isDark
-        ? 'linear-gradient(135deg, rgba(225, 82, 99, 0.18) 0%, rgba(18, 24, 18, 0.95) 100%)'
-        : 'linear-gradient(135deg, #ffffff 0%, #faf3f5 50%, #f5e4e8 100%)',
-      borderColor: isDark ? 'rgba(225, 82, 99, 0.3)' : 'rgba(180, 80, 100, 0.3)',
-      iconBg: isDark ? 'linear-gradient(135deg, #e15263, #c0394b)' : 'linear-gradient(135deg, #a84255, #c85a70)',
+        ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(18, 24, 18, 0.95) 100%)'
+        : 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 50%, #dcfce7 100%)',
+      borderColor: isDark ? 'rgba(16, 185, 129, 0.35)' : 'rgba(16, 185, 129, 0.3)',
+      iconBg: isDark ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #059669, #047857)',
     },
     {
       label: 'Locked Deposits',
       value: `$${lockedDepositBalance.toFixed(2)}`,
       icon: Lock,
-      tone: 'info',
-      change: 'Frozen',
+      tone: 'emerald',
+      change: 'Protected',
       gradient: isDark
-        ? 'linear-gradient(135deg, rgba(100, 116, 139, 0.2) 0%, rgba(18, 24, 18, 0.95) 100%)'
-        : 'linear-gradient(135deg, #ffffff 0%, #f4f6f4 50%, #e2e8e2 100%)',
-      borderColor: isDark ? 'rgba(100, 116, 139, 0.3)' : 'rgba(100, 120, 100, 0.25)',
-      iconBg: isDark ? 'linear-gradient(135deg, #5a6878, #404c58)' : 'linear-gradient(135deg, #526352, #3d4a3d)',
+        ? 'linear-gradient(135deg, rgba(5, 150, 105, 0.22) 0%, rgba(18, 24, 18, 0.95) 100%)'
+        : 'linear-gradient(135deg, #ffffff 0%, #ecfdf5 50%, #d1fae5 100%)',
+      borderColor: isDark ? 'rgba(5, 150, 105, 0.35)' : 'rgba(5, 150, 105, 0.3)',
+      iconBg: isDark ? 'linear-gradient(135deg, #059669, #047857)' : 'linear-gradient(135deg, #047857, #065f46)',
     },
   ]
 
@@ -889,18 +889,18 @@ function DashboardPage() {
         </Link>
 
         <Link
-          className="action-card violet"
+          className="action-card emerald"
           to="/referral-tree"
           style={{
             textDecoration: 'none',
             padding: '1.5rem 1.4rem',
             borderRadius: '22px',
             background: isDark
-              ? 'linear-gradient(135deg, rgba(28, 26, 18, 0.95) 0%, rgba(44, 40, 26, 0.92) 100%)'
-              : 'linear-gradient(135deg, #ffffff 0%, #f8f6f0 50%, #eee8d5 100%)',
+              ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(18, 24, 18, 0.95) 100%)'
+              : 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 50%, #dcfce7 100%)',
             color: isDark ? '#f0f4ef' : '#141e14',
-            border: isDark ? '1px solid rgba(180, 150, 70, 0.35)' : '1px solid rgba(140, 110, 40, 0.28)',
-            boxShadow: isDark ? '0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)' : '0 10px 28px rgba(140, 110, 40, 0.14), inset 0 1px 0 #ffffff',
+            border: isDark ? '1px solid rgba(16, 185, 129, 0.35)' : '1px solid rgba(16, 185, 129, 0.28)',
+            boxShadow: isDark ? '0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)' : '0 10px 28px rgba(16, 185, 129, 0.14), inset 0 1px 0 #ffffff',
             position: 'relative',
             overflow: 'hidden',
             display: 'flex',
@@ -918,9 +918,9 @@ function DashboardPage() {
                 textTransform: 'uppercase',
                 padding: '4px 11px',
                 borderRadius: '999px',
-                background: isDark ? 'rgba(180, 150, 70, 0.2)' : 'rgba(140, 110, 40, 0.12)',
-                color: isDark ? '#d4b055' : '#8c6e28',
-                border: isDark ? '1px solid rgba(180, 150, 70, 0.35)' : '1px solid rgba(140, 110, 40, 0.25)',
+                background: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.12)',
+                color: isDark ? '#34d399' : '#059669',
+                border: isDark ? '1px solid rgba(16, 185, 129, 0.35)' : '1px solid rgba(16, 185, 129, 0.25)',
               }}
             >
               VIP Network

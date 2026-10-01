@@ -17,6 +17,8 @@ const {
   formatProfitLocalYmd,
 } = require("../../utils/profitDays");
 
+const { safeJsonParse } = require("../../utils/jsonHelper");
+
 const router = express.Router();
 
 const investSchema = z.object({
@@ -40,11 +42,20 @@ router.get(
         "features",
         "image_path as imagePath",
       )
-      .where({ is_active: 1 });
+      .where({ is_active: 1 })
+      .orderBy("id", "asc");
 
     res.json({
       success: true,
-      data: plans.map((p) => ({ ...p, features: p.features ? JSON.parse(p.features) : [] })),
+      data: plans.map((p) => ({
+        ...p,
+        minAmount: Number(p.minAmount),
+        maxAmount: p.maxAmount ? Number(p.maxAmount) : null,
+        durationDays: Number(p.durationDays),
+        dailyReturn: Number(p.dailyReturn),
+        totalReturn: Number(p.totalReturn),
+        features: safeJsonParse(p.features, []),
+      })),
     });
   }),
 );

@@ -14,6 +14,7 @@ const { adjustWalletBalance, getOrCreateWallet } = require("../../services/walle
 const { getEnrichedReferralNetwork } = require("../../services/referralNetworkService");
 const { creditPendingDailyProfitsForUserIds, creditPendingDailyProfitsForAllUsers, settleMaturedPrincipalsForAllUsers, getProfitBacklogSummary } = require("../../services/investmentProfitService");
 const { signAccessToken } = require("../../utils/tokens");
+const { safeJsonParse } = require("../../utils/jsonHelper");
 
 const router = express.Router();
 const uploadsRoot = path.join(process.cwd(), "uploads");
@@ -608,7 +609,7 @@ router.get(
       success: true,
       data: rows.map((item) => ({
         ...item,
-        features: item.features ? JSON.parse(item.features) : [],
+        features: safeJsonParse(item.features, []),
       })),
     });
   }),

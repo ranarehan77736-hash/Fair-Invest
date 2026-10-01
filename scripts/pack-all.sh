@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+echo "=========================================================="
+echo " FairInvest Full Deployment Packaging Suite"
+echo " Target Domains:"
+echo "   - Frontend: fairinvest.site"
+echo "   - Admin:    fairinvest.site/admin"
+echo "   - Backend:  api.fairinvest.site"
+echo "=========================================================="
+
+bash "$ROOT/scripts/pack-site.sh"
+echo ""
+bash "$ROOT/scripts/pack-admin.sh"
+echo ""
+bash "$ROOT/scripts/pack-backend.sh"
+
+echo ""
+echo "=========================================================="
+echo " ALL PACKAGES CREATED SUCCESSFULLY!"
+echo "=========================================================="
+echo "1. Frontend:     site-deploy-clean.tar.gz (or .zip)"
+echo "   -> Extract in cPanel: public_html/"
+echo ""
+echo "2. Admin Panel:  admin-deploy-clean.tar.gz (or .zip)"
+echo "   -> Extract in cPanel: public_html/admin/"
+echo ""
+echo "3. Backend API:  backend-deploy-clean.tar.gz (or .zip)"
+echo "   -> Extract in cPanel Node.js app folder for api.fairinvest.site"
+echo ""
+echo "4. Database:     fairinvest_mysql_schema.sql"
+echo "   -> Import in cPanel phpMyAdmin (or run 'npm run migrate' in backend)"
+echo "=========================================================="

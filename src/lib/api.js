@@ -84,7 +84,7 @@ function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
       ok: true,
       status: 'success',
       data: [
-        { id: 1, platform: 'whatsapp', url: 'https://whatsapp.com', label: 'Official WhatsApp' },
+        { id: 1, platform: 'whatsapp', url: 'https://whatsapp.com/channel/0029Vb9YnsS4dTnBGIVclZ1r', label: 'Follow Fair invest Official Channel' },
         { id: 2, platform: 'telegram', url: 'https://telegram.org', label: 'Telegram VIP Community' },
       ],
     }

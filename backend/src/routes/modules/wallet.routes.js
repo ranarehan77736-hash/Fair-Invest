@@ -11,6 +11,7 @@ const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const { getOrCreateWallet, adjustWalletBalance } = require("../../services/walletService");
 const { creditPendingDailyProfits, creditPendingDailyProfitsIfDue } = require("../../services/investmentProfitService");
+const { safeJsonParse } = require("../../utils/jsonHelper");
 
 const router = express.Router();
 const PAYMENT_METHODS = [
@@ -267,7 +268,7 @@ router.get(
       success: true,
       data: rows.map((item) => ({
         ...item,
-        accountDetails: item.accountDetails ? JSON.parse(item.accountDetails) : {},
+        accountDetails: safeJsonParse(item.accountDetails, {}),
       })),
       cooldown,
     });

@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { useAppContext } from '../context/AppContext.jsx'
 import { useTheme } from '../context/ThemeContext.jsx'
 import { API_BASE } from '../lib/api.js'
+import { investmentPlans as fallbackPlans } from '../data/mockData.js'
 
 const toAssetUrl = (path) => {
   if (!path) return ''
@@ -33,6 +34,7 @@ const toAssetUrl = (path) => {
 
 function InvestmentPlansPage() {
   const { investmentPlans, invest, user } = useAppContext()
+  const plansList = investmentPlans && investmentPlans.length > 0 ? investmentPlans : fallbackPlans
   const [draft, setDraft] = useState(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -161,13 +163,13 @@ function InvestmentPlansPage() {
             marginTop: '1.1rem',
           }}
         >
-          <span className="pill-badge cyan" style={{ fontSize: '0.78rem' }}>
+          <span className="pill-badge emerald" style={{ fontSize: '0.78rem' }}>
             <FiZap size={12} /> Daily Auto Payouts
           </span>
-          <span className="pill-badge violet" style={{ fontSize: '0.78rem' }}>
+          <span className="pill-badge emerald" style={{ fontSize: '0.78rem' }}>
             <FiShield size={12} /> Institutional Security
           </span>
-          <span className="pill-badge" style={{ fontSize: '0.78rem' }}>
+          <span className="pill-badge emerald" style={{ fontSize: '0.78rem' }}>
             <FiCheckCircle size={12} /> Zero Hidden Fees
           </span>
         </div>
@@ -175,7 +177,7 @@ function InvestmentPlansPage() {
 
       {/* Plans Cards Grid */}
       <div className="plans-grid">
-        {investmentPlans.map((plan, index) => {
+        {plansList.map((plan, index) => {
           const PlanIcon = iconMap[plan.slug] || FiTrendingUp
           const coverImage = planCoverImage(plan)
           const isPopular = Boolean(plan.popular)

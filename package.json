@@ -11,6 +11,7 @@
     "pack:admin": "bash scripts/pack-admin.sh",
     "pack:site": "bash scripts/pack-site.sh",
     "pack:backend": "bash scripts/pack-backend.sh",
+    "pack:all": "bash scripts/pack-all.sh",
     "lint": "eslint .",
     "preview": "vite preview"
   },

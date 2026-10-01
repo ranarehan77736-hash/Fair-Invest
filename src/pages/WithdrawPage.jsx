@@ -136,7 +136,7 @@ function WithdrawPage() {
         </span>
       </div>
       <div className="locked-funds-note">
-        <span className="pill-badge violet">
+        <span className="pill-badge emerald">
           <Lock size={13} /> Locked Deposit Balance
         </span>
         <strong>${lockedDepositBalance.toFixed(2)}</strong>

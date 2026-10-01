@@ -65,11 +65,14 @@ function SplashPage() {
         >
           <Sparkles size={18} /> Start Investing and Earning Today <Sparkles size={18} />
         </motion.p>
-        {whatsappLink?.url ? (
-          <a className="whatsapp-splash-cta" href={whatsappLink.url} target="_blank" rel="noreferrer">
-            <FaWhatsapp size={18} /> Join WhatsApp Channel
-          </a>
-        ) : null}
+        <a
+          className="whatsapp-splash-cta"
+          href={whatsappLink?.url || 'https://whatsapp.com/channel/0029Vb9YnsS4dTnBGIVclZ1r'}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <FaWhatsapp size={18} /> Follow Fair invest Official Channel
+        </a>
         {supportedSocialLinks.length ? (
           <div className="splash-social-links">
             {supportedSocialLinks.map((link, idx) => (

@@ -7,6 +7,7 @@ const { requireAuth } = require("../../middleware/auth");
 const validate = require("../../middleware/validate");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
+const { generateReferralCode } = require("../../utils/referrals");
 
 const router = express.Router();
 
@@ -46,14 +47,27 @@ router.get(
   "/me",
   requireAuth,
   asyncHandler(async (req, res) => {
-    const [user, wallet, settings, referralCode] = await Promise.all([
+    const [user, wallet, settings] = await Promise.all([
       db("users").where({ id: req.user.id }).first(),
       db("wallets").where({ user_id: req.user.id }).first(),
       db("settings").where({ user_id: req.user.id }).first(),
-      db("referral_codes").where({ user_id: req.user.id }).first(),
     ]);
 
     if (!user) throw new ApiError(404, "User not found");
+
+    let referralCode = await db("referral_codes").where({ user_id: req.user.id }).first();
+    if (!referralCode) {
+      const code = generateReferralCode(user.name);
+      try {
+        await db("referral_codes").insert({
+          user_id: user.id,
+          code,
+        });
+        referralCode = { code };
+      } catch {
+        referralCode = (await db("referral_codes").where({ user_id: req.user.id }).first()) || { code };
+      }
+    }
 
     res.json({
       success: true,
@@ -71,7 +85,7 @@ router.get(
         isTwoFactorEnabled: !!user.is_two_factor_enabled,
         balance: Number(wallet?.balance || 0),
         lockedBalance: Number(wallet?.locked_balance || 0),
-        referralCode: referralCode?.code || null,
+        referralCode: referralCode?.code || generateReferralCode(user.name),
         settings: settings
           ? {
               emailNotifications: !!settings.email_notifications,

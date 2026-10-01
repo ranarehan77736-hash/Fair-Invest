@@ -5,7 +5,7 @@ import { useAppContext } from '../context/AppContext.jsx'
 import { getSupportedSocialLinks } from '../lib/socialPlatforms.js'
 import FairInvestLogo from './FairInvestLogo.jsx'
 
-const DEFAULT_WHATSAPP_URL = 'https://chat.whatsapp.com/'
+const DEFAULT_WHATSAPP_URL = 'https://whatsapp.com/channel/0029Vb9YnsS4dTnBGIVclZ1r'
 
 function WhatsAppJoinPrompt() {
   const { isBootstrapping, socialLinks } = useAppContext()
@@ -14,7 +14,7 @@ function WhatsAppJoinPrompt() {
   const whatsappLink = useMemo(() => {
     const links = getSupportedSocialLinks(socialLinks)
     const found = links.find((item) => item.platform === 'whatsapp' && item.url)
-    return found || { platform: 'whatsapp', url: DEFAULT_WHATSAPP_URL, label: 'WhatsApp' }
+    return found || { platform: 'whatsapp', url: DEFAULT_WHATSAPP_URL, label: 'Official WhatsApp Channel' }
   }, [socialLinks])
 
   useEffect(() => {
@@ -68,10 +68,10 @@ function WhatsAppJoinPrompt() {
         </div>
 
         <h2 id="whatsapp-prompt-title" className="whatsapp-prompt-title">
-          Welcome to FairInvest
+          Follow FairInvest Official Channel
         </h2>
         <p className="whatsapp-prompt-subtitle">
-          Join our official channel for real-time payout verifications, market analytics, and 24/7 dedicated support.
+          Follow the Fair invest Official channel on WhatsApp for daily profit distributions, withdrawal proofs, and important announcements.
         </p>
 
         <a
@@ -82,7 +82,7 @@ function WhatsAppJoinPrompt() {
           onClick={closePrompt}
         >
           <FaWhatsapp size={20} aria-hidden />
-          Join Official WhatsApp
+          Follow on WhatsApp
         </a>
       </div>
     </div>

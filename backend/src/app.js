@@ -20,10 +20,10 @@ if (!fs.existsSync(uploadsRoot)) {
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin) return callback(null, true)
-      if (origin === env.clientUrl) return callback(null, true)
-      if (/^http:\/\/localhost:\d+$/.test(origin)) return callback(null, true)
-      return callback(new Error("Not allowed by CORS"))
+      if (env.isOriginAllowed(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Not allowed by CORS: ${origin}`));
     },
     credentials: true,
   }),
@@ -73,6 +73,14 @@ if (canServeFrontend) {
   }
   app.get(/^\/(?!api(?:\/|$)|admin(?:\/|$)).*$/, (_req, res) => {
     res.sendFile(frontendIndex);
+  });
+} else {
+  app.get("/", (_req, res) => {
+    res.json({
+      status: "online",
+      service: "FairInvest API",
+      health: "/api/health",
+    });
   });
 }
 

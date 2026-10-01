@@ -5,6 +5,7 @@ const env = require("../../config/env");
 const { requireAuth } = require("../../middleware/auth");
 const asyncHandler = require("../../utils/asyncHandler");
 const { getEnrichedReferralNetwork } = require("../../services/referralNetworkService");
+const { generateReferralCode, generateReferralLinkToken } = require("../../utils/referrals");
 
 const router = express.Router();
 
@@ -12,8 +13,29 @@ router.get(
   "/overview",
   requireAuth,
   asyncHandler(async (req, res) => {
-    const referralCode = await db("referral_codes").where({ user_id: req.user.id }).first();
-    const referralLink = await db("referral_links").where({ user_id: req.user.id }).first();
+    let referralCode = await db("referral_codes").where({ user_id: req.user.id }).first();
+    if (!referralCode) {
+      const user = await db("users").where({ id: req.user.id }).first();
+      const code = generateReferralCode(user?.name || "USER");
+      try {
+        await db("referral_codes").insert({ user_id: req.user.id, code });
+        referralCode = { code };
+      } catch {
+        referralCode = (await db("referral_codes").where({ user_id: req.user.id }).first()) || { code };
+      }
+    }
+
+    let referralLink = await db("referral_links").where({ user_id: req.user.id }).first();
+    if (!referralLink) {
+      const token = generateReferralLinkToken();
+      try {
+        await db("referral_links").insert({ user_id: req.user.id, token });
+        referralLink = { token };
+      } catch {
+        referralLink = (await db("referral_links").where({ user_id: req.user.id }).first()) || { token };
+      }
+    }
+
     const directCount = await db("referral_relations").where({ referrer_id: req.user.id, level: 1 }).count({ count: "*" }).first();
     const totalCount = await db("referral_relations").where({ referrer_id: req.user.id }).count({ count: "*" }).first();
     const earnings = await db("commissions")

@@ -7,7 +7,12 @@ const db = require("../db/knex");
 function initializeSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: env.clientUrl,
+      origin(origin, callback) {
+        if (env.isOriginAllowed(origin)) {
+          return callback(null, true);
+        }
+        return callback(new Error(`Not allowed by socket CORS: ${origin}`));
+      },
       credentials: true,
     },
   });

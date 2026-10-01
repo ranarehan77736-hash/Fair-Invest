@@ -290,32 +290,30 @@ function SignUpPage() {
               </p>
             </div>
 
-            {whatsappLink?.url ? (
-              <a
-                href={whatsappLink.url}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '12px 16px',
-                  borderRadius: '14px',
-                  background: whatsappBg,
-                  border: whatsappBorder,
-                  color: isDark ? '#9bc268' : '#5e7e37',
-                  textDecoration: 'none',
-                }}
-              >
-                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#22c55e', color: '#090d16', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0 }}>
-                  <FaWhatsapp size={22} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <strong style={{ display: 'block', fontSize: '0.84rem', color: titleColor, fontWeight: 700 }}>Join FairInvest Official Channel</strong>
-                  <span style={{ fontSize: '0.74rem', color: subtitleColor }}>Receive VIP signals & community announcements</span>
-                </div>
-              </a>
-            ) : null}
+            <a
+              href={whatsappLink?.url || 'https://whatsapp.com/channel/0029Vb9YnsS4dTnBGIVclZ1r'}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                borderRadius: '14px',
+                background: whatsappBg,
+                border: whatsappBorder,
+                color: isDark ? '#9bc268' : '#5e7e37',
+                textDecoration: 'none',
+              }}
+            >
+              <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#22c55e', color: '#090d16', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0 }}>
+                <FaWhatsapp size={22} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <strong style={{ display: 'block', fontSize: '0.84rem', color: titleColor, fontWeight: 700 }}>Follow Fair invest Official Channel on WhatsApp</strong>
+                <span style={{ fontSize: '0.74rem', color: subtitleColor }}>Daily profit distributions, withdrawal proofs & announcements</span>
+              </div>
+            </a>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <Input

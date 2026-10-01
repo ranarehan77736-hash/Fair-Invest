@@ -34,7 +34,7 @@ exports.seed = async function seed(knex) {
       id: 1,
       role_id: 2,
       name: "Admin User",
-      email: "admin@horizoneinvest.com",
+      email: "admin@fairinvest.site",
       phone: "+92 300 0000000",
       password_hash: password,
       is_verified: true,
@@ -98,8 +98,8 @@ exports.seed = async function seed(knex) {
   if (hasSocialTable) {
     await knex("social_links").del();
     await knex("social_links").insert([
-      { platform: "whatsapp", url: "https://chat.whatsapp.com/", is_active: true },
-      { platform: "telegram", url: "https://t.me/horizoneinvest", is_active: true },
+      { platform: "whatsapp", url: "https://whatsapp.com/channel/0029Vb9YnsS4dTnBGIVclZ1r", is_active: true },
+      { platform: "telegram", url: "https://t.me/fairinvest", is_active: true },
     ]);
   }
 
@@ -107,8 +107,8 @@ exports.seed = async function seed(knex) {
   if (hasSiteLinksTable) {
     await knex("site_links").del();
     await knex("site_links").insert([
-      { title: "Official WhatsApp Channel", url: "https://whatsapp.com", sort_order: 1, is_active: 1 },
-      { title: "Telegram VIP Community", url: "https://telegram.org", sort_order: 2, is_active: 1 },
+      { title: "Follow the Fair invest Official channel on WhatsApp", url: "https://whatsapp.com/channel/0029Vb9YnsS4dTnBGIVclZ1r", sort_order: 1, is_active: 1 },
+      { title: "Telegram VIP Community", url: "https://t.me/fairinvest", sort_order: 2, is_active: 1 },
     ]);
   }
 };

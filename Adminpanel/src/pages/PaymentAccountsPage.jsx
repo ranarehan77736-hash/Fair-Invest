@@ -51,6 +51,12 @@ const DIGITAL_METHOD_TEMPLATES = [
   { label: 'JazzCash', method: 'jazzcash', displayName: 'JazzCash Account', logoPath: '/bank-logos/jazzcash.png' },
   { label: 'NayaPay', method: 'nayapay', displayName: 'NayaPay Account', logoPath: '/bank-logos/nayapay.png' },
   { label: 'SadaPay', method: 'sadapay', displayName: 'SadaPay Account', logoPath: '/bank-logos/sadapay.png' },
+  {
+    label: 'Digitt+ / Raast (Scan & Pay)',
+    method: 'digit_plus',
+    displayName: 'Digitt+ / Raast (Scan & Pay)',
+    logoPath: '/images/digitt_plus_scan_pay.png',
+  },
   { label: 'Digit Plus', method: 'digit_plus', displayName: 'Digit Plus Account', logoPath: '/bank-logos/digit-plus.png' },
   {
     label: 'USDT TRC20',
