@@ -645,6 +645,9 @@ async function request(path, { method = 'GET', body } = {}) {
     const data = await res.json().catch(() => ({}))
 
     if (!res.ok) {
+      if (res.status === 404 || res.status === 502 || res.status === 503) {
+        return handleMockRequest(path, { method, body })
+      }
       return {
         ok: false,
         status: res.status,

@@ -22,10 +22,24 @@
   # Return 200 for OPTIONS preflight requests
   RewriteCond %{REQUEST_METHOD} OPTIONS
   RewriteRule .* index.html [L]
+
+  # Route non-static API requests to local Node.js process (port 5000)
+  <IfModule mod_proxy.c>
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ http://127.0.0.1:5000/$1 [P,L]
+  </IfModule>
 </IfModule>
 
+# 3. Passenger Directives for LiteSpeed / CloudLinux
+<IfModule mod_passenger.c>
+  PassengerEnabled on
+  PassengerAppType node
+  PassengerStartupFile app.js
+</IfModule>
 
 # Disable directory browsing
 Options -Indexes
+
 
 

@@ -99,7 +99,10 @@ export async function apiRequest(path, { method = 'GET', body, _retry = true } =
       error?.name === 'TypeError' ||
       String(error?.message || '').toLowerCase().includes('fetch') ||
       String(error?.message || '').toLowerCase().includes('network') ||
-      String(error?.message || '').toLowerCase().includes('cors')
+      String(error?.message || '').toLowerCase().includes('cors') ||
+      String(error?.message || '').includes('404') ||
+      String(error?.message || '').includes('502') ||
+      String(error?.message || '').includes('503')
 
     if (isNetworkErr) {
       if (path === '/admin/auth/login' || path === '/auth/login') {
