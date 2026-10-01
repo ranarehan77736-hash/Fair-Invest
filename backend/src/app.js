@@ -42,7 +42,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
 app.use(
   helmet({
     // Allow frontend/admin domains to embed media served by API /uploads.
