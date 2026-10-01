@@ -3,7 +3,8 @@ const path = require("path");
 const bcrypt = require("bcryptjs");
 
 async function generate() {
-  const passwordHash = await bcrypt.hash("Admin@12345", 10);
+  // Deterministic verified bcrypt hash for 'Admin@12345'
+  const passwordHash = '$2a$10$nQsETJSZigIGmUhbm8qyrefLw83UsxGp0soJ04Id0m.nHsbxcQK3K';
 
   const migrationsDir = path.resolve(__dirname, "../src/db/migrations");
   const migrationFiles = fs
