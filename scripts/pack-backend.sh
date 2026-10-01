@@ -25,6 +25,7 @@ FILES_TO_PACK=(
   test-smtp.js
   .env.example
   .htaccess
+  index.html
   fairinvest_mysql_schema.sql
 )
 
