@@ -83,7 +83,7 @@ const env = {
   jwtAccessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "15m",
   jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
   rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000),
-  rateLimitMax: Number(process.env.RATE_LIMIT_MAX || 100),
+  rateLimitMax: Number(process.env.RATE_LIMIT_MAX || 5000),
   smtp: {
     host: sanitizeEnvValue(process.env.SMTP_HOST),
     port: Number(process.env.SMTP_PORT || 465),

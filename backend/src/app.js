@@ -12,6 +12,7 @@ const apiRouter = require("./routes");
 const { writeAuditLog } = require("./utils/audit");
 
 const app = express();
+app.set("trust proxy", 1);
 const uploadsRoot = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadsRoot)) {
   fs.mkdirSync(uploadsRoot, { recursive: true });
@@ -56,6 +57,10 @@ app.use(
     max: env.rateLimitMax,
     standardHeaders: true,
     legacyHeaders: false,
+    skip: (req) =>
+      req.method === "OPTIONS" ||
+      req.path.startsWith("/admin") ||
+      req.path.startsWith("/api/admin"),
   }),
 );
 
