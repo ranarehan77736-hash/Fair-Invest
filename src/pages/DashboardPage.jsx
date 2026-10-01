@@ -505,7 +505,7 @@ function DashboardPage() {
               </span>
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={270}>
+          <ResponsiveContainer width="100%" height={270} minWidth={0}>
             <ComposedChart data={growthData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorGrowthCurve" x1="0" y1="0" x2="0" y2="1">
@@ -549,7 +549,7 @@ function DashboardPage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'center' }}>
             <div style={{ position: 'relative', width: '100%', height: 210 }}>
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                 <RechartsPieChart>
                   <Tooltip content={<CustomPieTooltip isDark={isDark} />} />
                   <Pie

@@ -261,6 +261,18 @@ export function AppProvider({ children }) {
       try {
         const meRes = await request('/users/me')
         if (!active) return
+
+        if (!meRes.ok) {
+          // Token is rejected (e.g. 401 unauthorized or expired)
+          clearTokens()
+          localStorage.removeItem('fairinvest-local-user')
+          setIsAuthenticated(false)
+          setUser(emptyUser)
+          setIsBootstrapping(false)
+          socialLinksPromise.catch(() => { })
+          return
+        }
+
         setIsAuthenticated(true)
         const storedLocal = localStorage.getItem('fairinvest-local-user')
         const savedUser = storedLocal ? JSON.parse(storedLocal) : null
@@ -347,6 +359,9 @@ export function AppProvider({ children }) {
           ...(otp ? { otp } : {}),
         },
       })
+      if (!response.ok) {
+        return { ok: false, message: response.message || 'Registration failed.' }
+      }
       setTokens(response.data.accessToken, response.data.refreshToken)
       setIsAuthenticated(true)
       setIsBootstrapping(false)
@@ -536,6 +551,15 @@ export function AppProvider({ children }) {
         method: 'POST',
         body: { planId: Number(planId), amount: Number(amount) },
       })
+      if (!response.ok) {
+        if (response.status === 401) {
+          clearTokens()
+          setIsAuthenticated(false)
+          setUser(emptyUser)
+          return { ok: false, status: 401, message: 'Your session has expired. Please log in again.' }
+        }
+        return { ok: false, message: response.message || 'Unable to place investment.' }
+      }
       refreshCoreData().catch(() => { })
       return { ok: true, message: response.message || 'Investment placed successfully.' }
     } catch (error) {
@@ -552,6 +576,15 @@ export function AppProvider({ children }) {
       if (paymentAccountId) form.append('paymentAccountId', String(paymentAccountId))
       form.append('proof', proofFile)
       const response = await request('/wallet/deposit', { method: 'POST', body: form })
+      if (!response.ok) {
+        if (response.status === 401) {
+          clearTokens()
+          setIsAuthenticated(false)
+          setUser(emptyUser)
+          return { ok: false, status: 401, message: 'Your session has expired. Please log in again.' }
+        }
+        return { ok: false, message: response.message || 'Deposit request failed.' }
+      }
       refreshCoreData().catch(() => { })
       return { ok: true, message: response.message || 'Deposit request submitted.' }
     } catch (error) {
@@ -565,6 +598,15 @@ export function AppProvider({ children }) {
         method: 'POST',
         body: { amount: Number(amount), method, accountDetails },
       })
+      if (!response.ok) {
+        if (response.status === 401) {
+          clearTokens()
+          setIsAuthenticated(false)
+          setUser(emptyUser)
+          return { ok: false, status: 401, message: 'Your session has expired. Please log in again.' }
+        }
+        return { ok: false, message: response.message || 'Withdrawal request failed.' }
+      }
       refreshCoreData().catch(() => { })
       return { ok: true, message: response.message || 'Withdrawal request submitted.' }
     } catch (error) {

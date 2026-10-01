@@ -24,6 +24,7 @@ FILES_TO_PACK=(
   reset-admin.js
   test-smtp.js
   .env.example
+  .htaccess
   fairinvest_mysql_schema.sql
 )
 

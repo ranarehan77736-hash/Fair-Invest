@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
   Building2,
@@ -37,6 +38,7 @@ const toAssetUrl = (path) => {
 }
 
 function DepositPage() {
+  const navigate = useNavigate()
   const { deposit, user, paymentAccounts } = useAppContext()
   const [amount, setAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -113,11 +115,18 @@ function DepositPage() {
       proofFile,
     })
     setSubmitting(false)
-    if (response.ok) toast.success(response.message)
-    else toast.error(response.message)
     if (response.ok) {
+      toast.success(response.message)
       setAmount('')
       setProofFile(null)
+      const inputEl = document.getElementById('deposit-proof-input')
+      if (inputEl) inputEl.value = ''
+    } else {
+      toast.error(response.message || 'Deposit submission failed.')
+      if (response.status === 401) {
+        toast.info('Redirecting to login...')
+        setTimeout(() => navigate('/login'), 1200)
+      }
     }
   }
 

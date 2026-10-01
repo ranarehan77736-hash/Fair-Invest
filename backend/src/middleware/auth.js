@@ -4,8 +4,18 @@ const ApiError = require("../utils/ApiError");
 const db = require("../db/knex");
 
 async function requireAuth(req, _res, next) {
-  const authHeader = req.headers.authorization || "";
-  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  const authHeader =
+    req.headers.authorization ||
+    req.headers["x-http-authorization"] ||
+    req.headers["http-authorization"] ||
+    req.headers["x-authorization"] ||
+    (req.headers["x-access-token"] ? `Bearer ${req.headers["x-access-token"]}` : "") ||
+    "";
+
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.slice(7).trim()
+    : (req.headers["x-access-token"] ? String(req.headers["x-access-token"]).trim() : null);
+
   if (!token) {
     return next(new ApiError(401, "Missing authentication token"));
   }

@@ -1,0 +1,12 @@
+# ==============================================================================
+# FairInvest Backend API cPanel / Apache Configuration
+# Ensures Authorization header is passed to Node.js backend
+# ==============================================================================
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Pass Authorization header to Node.js application (prevents 401 on Apache)
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes

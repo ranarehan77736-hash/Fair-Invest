@@ -402,22 +402,27 @@ function handleMockRequest(path, { method: _method = 'GET', body = {} } = {}) {
 }
 
 async function request(path, { method = 'GET', body } = {}) {
-  const headers = {
-    'Content-Type': 'application/json',
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData
+  const headers = {}
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json'
   }
   const token = getAccessToken()
   if (token) {
     headers['Authorization'] = `Bearer ${token}`
+    headers['X-Access-Token'] = token
+    headers['X-HTTP-Authorization'] = `Bearer ${token}`
   }
 
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 4000)
+    const timeoutMs = isFormData ? 30000 : 8000
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
     const res = await fetch(`${API_BASE}${path}`, {
       method,
       headers,
-      body: body ? JSON.stringify(body) : undefined,
+      body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
       signal: controller.signal,
     })
     clearTimeout(timeoutId)
@@ -427,15 +432,15 @@ async function request(path, { method = 'GET', body } = {}) {
     if (!res.ok) {
       return {
         ok: false,
-        status: 'error',
-        message: data?.message || data?.error || 'Authentication failed. Please check your credentials.',
+        status: res.status,
+        message: data?.message || data?.error || (res.status === 401 ? 'Session expired. Please log in again.' : 'Request failed.'),
         data: data?.data || null,
       }
     }
 
     return {
       ok: true,
-      status: 'success',
+      status: res.status,
       message: data?.message || 'Success',
       data: data?.data ?? data,
     }
