@@ -79,49 +79,57 @@ function DepositsPage() {
             </tr>
           </thead>
           <tbody>
-            {deposits.map((item) => (
-              <tr key={item.id} className="user-row-clickable" onClick={() => setSelectedDeposit(item)}>
-                <td>{item.id}</td>
-                <td>{item.userName || userById.get(Number(item.userId))?.name || `User #${item.userId}`}</td>
-                <td>{item.paymentAccountName || item.method}</td>
-                <td>${Number(item.amount).toFixed(2)}</td>
-                <td>
-                  {item.proofPath ? (
-                    <a href={toAssetUrl(item.proofPath)} target="_blank" rel="noreferrer">
-                      <img src={toAssetUrl(item.proofPath)} alt="proof" width={64} height={44} />
-                    </a>
-                  ) : (
-                    'Missing'
-                  )}
-                </td>
-                <td>{item.status}</td>
-                <td>
-                  <select
-                    defaultValue={item.status}
-                    onClick={(event) => event.stopPropagation()}
-                    onChange={(e) => updateStatus(item.id, e.target.value)}
-                  >
-                    {options.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <button
-                    className="mini-btn danger-inline"
-                    disabled={item.status !== 'pending'}
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      handleDelete(item.id)
-                    }}
-                  >
-                    Delete
-                  </button>
+            {deposits.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="table-empty" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--muted)', fontSize: '0.94rem' }}>
+                  No deposit requests found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              deposits.map((item) => (
+                <tr key={item.id} className="user-row-clickable" onClick={() => setSelectedDeposit(item)}>
+                  <td>{item.id}</td>
+                  <td>{item.userName || userById.get(Number(item.userId))?.name || `User #${item.userId}`}</td>
+                  <td>{item.paymentAccountName || item.method}</td>
+                  <td>${Number(item.amount).toFixed(2)}</td>
+                  <td>
+                    {item.proofPath ? (
+                      <a href={toAssetUrl(item.proofPath)} target="_blank" rel="noreferrer">
+                        <img src={toAssetUrl(item.proofPath)} alt="proof" width={64} height={44} />
+                      </a>
+                    ) : (
+                      'Missing'
+                    )}
+                  </td>
+                  <td>{item.status}</td>
+                  <td>
+                    <select
+                      defaultValue={item.status}
+                      onClick={(event) => event.stopPropagation()}
+                      onChange={(e) => updateStatus(item.id, e.target.value)}
+                    >
+                      {options.map((status) => (
+                        <option key={status} value={status}>
+                          {status}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <button
+                      className="mini-btn danger-inline"
+                      disabled={item.status !== 'pending'}
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        handleDelete(item.id)
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

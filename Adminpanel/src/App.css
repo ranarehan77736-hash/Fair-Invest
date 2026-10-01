@@ -9,22 +9,6 @@
   background: radial-gradient(circle at 20% 20%, #121812 0, var(--bg) 45%, #050805 100%);
 }
 
-.admin-login-page input:-webkit-autofill,
-.admin-login-page input:-webkit-autofill:hover,
-.admin-login-page input:-webkit-autofill:focus {
-  -webkit-text-fill-color: inherit !important;
-  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
-  transition: background-color 5000s ease-in-out 0s;
-}
-
-.admin-login-field input {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-  padding: 0 !important;
-}
-
 .login-card {
   width: min(420px, 92vw);
   background: var(--panel);
@@ -1700,6 +1684,16 @@ body[data-admin-theme='light'] .record-modal-card .user-overview-head {
 
 /* Select Option Dark/Light Theme Dropdown Styling */
 select option {
+  background-color: #121812 !important;
+  color: #f0f4ef !important;
+}
+
+body[data-admin-theme='light'] select option {
+  background-color: #ffffff !important;
+  color: #141e14 !important;
+}
+
+elect option {
   background-color: #121812 !important;
   color: #f0f4ef !important;
 }

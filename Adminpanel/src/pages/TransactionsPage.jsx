@@ -92,30 +92,38 @@ function TransactionsPage() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((tx) => (
-              <tr key={tx.id} className="user-row-clickable" onClick={() => setSelectedTx(tx)}>
-                <td>{tx.id}</td>
-                <td>{tx.userName || userById.get(Number(tx.userId))?.name || `User #${tx.userId}`}</td>
-                <td>{tx.type}</td>
-                <td>{tx.method || '-'}</td>
-                <td>${Number(tx.amount).toFixed(2)}</td>
-                <td>{tx.status}</td>
-                <td>{tx.reference || '-'}</td>
-                <td>
-                  <select
-                    defaultValue={tx.status}
-                    onClick={(event) => event.stopPropagation()}
-                    onChange={(e) => onStatusChange(tx.id, e.target.value)}
-                  >
-                    {statusOptions.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
+            {rows.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="table-empty" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--muted)', fontSize: '0.94rem' }}>
+                  No transactions found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              rows.map((tx) => (
+                <tr key={tx.id} className="user-row-clickable" onClick={() => setSelectedTx(tx)}>
+                  <td>{tx.id}</td>
+                  <td>{tx.userName || userById.get(Number(tx.userId))?.name || `User #${tx.userId}`}</td>
+                  <td>{tx.type}</td>
+                  <td>{tx.method || '-'}</td>
+                  <td>${Number(tx.amount).toFixed(2)}</td>
+                  <td>{tx.status}</td>
+                  <td>{tx.reference || '-'}</td>
+                  <td>
+                    <select
+                      defaultValue={tx.status}
+                      onClick={(event) => event.stopPropagation()}
+                      onChange={(e) => onStatusChange(tx.id, e.target.value)}
+                    >
+                      {statusOptions.map((status) => (
+                        <option key={status} value={status}>
+                          {status}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

@@ -99,9 +99,49 @@ export async function apiRequest(path, { method = 'GET', body, _retry = true } =
       if (path === '/admin/auth/login' || path === '/auth/login') {
         const mockToken = `admin-token-${Date.now()}`
         setTokens(mockToken, mockToken)
-        return { ok: true, status: 'success', message: 'Admin login successful!', data: { accessToken: mockToken, refreshToken: mockToken, user: { id: 1, name: 'Admin User', email: 'admin@fairinvest.com', role: 'admin' } } }
+        return { ok: true, status: 'success', message: 'Admin login successful!', data: { accessToken: mockToken, refreshToken: mockToken, user: { id: 1, name: 'Admin User', email: 'admin@fairinvest.site', role: 'admin' } } }
       }
-      return { ok: true, status: 'success', message: 'Demo Admin Response', data: [] }
+
+      let fallbackData = []
+      if (path.includes('/admin/deposits')) {
+        fallbackData = [
+          { id: 1, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 100, method: 'Easypaisa', status: 'pending', reference: 'DEP-100201', proofPath: null, createdAt: new Date().toISOString() },
+          { id: 2, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 250, method: 'Bank Transfer', status: 'completed', reference: 'DEP-100202', proofPath: null, createdAt: new Date(Date.now() - 86400000).toISOString() },
+        ]
+      } else if (path.includes('/admin/withdrawals')) {
+        fallbackData = [
+          { id: 1, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 50, fee: 0, method: 'bank_transfer', accountDetails: { bankName: 'Easypaisa', accountTitle: 'Rana Rehan', accountNumber: '03001234567' }, status: 'pending', createdAt: new Date().toISOString() },
+        ]
+      } else if (path.includes('/admin/transactions')) {
+        fallbackData = [
+          { id: 1, userId: 2, userName: 'Rana Rehan', type: 'deposit', method: 'Easypaisa', amount: 250, status: 'completed', reference: 'DEP-100202', createdAt: new Date(Date.now() - 86400000).toISOString() },
+          { id: 2, userId: 2, userName: 'Rana Rehan', type: 'deposit', method: 'Easypaisa', amount: 100, status: 'pending', reference: 'DEP-100201', createdAt: new Date().toISOString() },
+        ]
+      } else if (path.includes('/admin/users')) {
+        fallbackData = [
+          { id: 1, id: 1, role_id: 2, name: 'Admin User', email: 'admin@fairinvest.site', phone: '+92 300 0000000', role: 'admin', is_blocked: false, country: 'Pakistan', walletBalance: 0 },
+          { id: 2, id: 2, role_id: 1, name: 'Rana Rehan', email: 'ranarehan77736@gmail.com', phone: '+92 300 1234567', role: 'user', is_blocked: false, country: 'Pakistan', walletBalance: 1000 },
+        ]
+      } else if (path.includes('/admin/plans')) {
+        fallbackData = [
+          { id: 1, slug: 'starter', name: 'Starter Plan', min_amount: 1, max_amount: 999, duration_days: 365, daily_return_percent: 2, total_return_percent: 730, is_active: true },
+          { id: 2, slug: 'professional', name: 'Professional Plan', min_amount: 1000, max_amount: 4999, duration_days: 365, daily_return_percent: 3, total_return_percent: 1095, is_active: true },
+          { id: 3, slug: 'elite', name: 'Elite Plan', min_amount: 5000, max_amount: null, duration_days: 365, daily_return_percent: 4, total_return_percent: 1460, is_active: true },
+        ]
+      } else if (path.includes('/admin/metrics')) {
+        fallbackData = { totalUsers: 2, activeUsers: 2, totalDeposits: 350, totalWithdrawals: 50, totalInvestments: 200, pendingDeposits: 1, pendingWithdrawals: 1 }
+      } else if (path.includes('/admin/payment-accounts')) {
+        fallbackData = [
+          { id: 1, method: 'easypaisa', display_name: 'Easypaisa Official', account_title: 'Fair Invest Admin', account_number: '03001234567', phone: '+92 300 1234567', is_active: true, sort_order: 1 },
+        ]
+      } else if (path.includes('/admin/social-links')) {
+        fallbackData = [
+          { id: 1, platform: 'whatsapp', url: 'https://whatsapp.com/channel/0029Vb9YnsS4dTnBGIVclZ1r', is_active: true },
+          { id: 2, platform: 'telegram', url: 'https://t.me/fairinvest', is_active: true },
+        ]
+      }
+
+      return { ok: true, status: 'success', message: 'Demo Admin Response', data: fallbackData }
     }
     throw error
   }

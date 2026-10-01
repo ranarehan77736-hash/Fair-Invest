@@ -94,6 +94,85 @@ exports.seed = async function seed(knex) {
     },
   ]);
 
+  const hasPaymentAccountsTable = await knex.schema.hasTable("payment_accounts");
+  let paymentAccountId = null;
+  if (hasPaymentAccountsTable) {
+    await knex("payment_accounts").del();
+    const [id] = await knex("payment_accounts").insert([
+      {
+        method: "easypaisa",
+        display_name: "Easypaisa Official",
+        account_title: "Fair Invest Admin",
+        account_number: "03001234567",
+        phone: "+92 300 1234567",
+        instructions: "Please send exact deposit amount and attach screenshot as proof.",
+        is_active: true,
+        sort_order: 1,
+      },
+    ]);
+    paymentAccountId = id || 1;
+  }
+
+  await knex("deposits").insert([
+    {
+      id: 1,
+      user_id: 2,
+      payment_account_id: paymentAccountId,
+      amount: 100.00,
+      method: "easypaisa",
+      status: "pending",
+      reference: "DEP-100201",
+      proof_path: null,
+      created_at: new Date(),
+    },
+    {
+      id: 2,
+      user_id: 2,
+      payment_account_id: paymentAccountId,
+      amount: 250.00,
+      method: "bank_transfer",
+      status: "completed",
+      reference: "DEP-100202",
+      proof_path: null,
+      created_at: new Date(Date.now() - 86400000),
+    },
+  ]);
+
+  await knex("withdrawals").insert([
+    {
+      id: 1,
+      user_id: 2,
+      amount: 50.00,
+      method: "bank_transfer",
+      account_details: JSON.stringify({ walletAddress: "TQ1a2b3c4d5e6f7g8h9i0j" }),
+      status: "pending",
+      created_at: new Date(),
+    },
+  ]);
+
+  await knex("transactions").insert([
+    {
+      id: 1,
+      user_id: 2,
+      amount: 250.00,
+      type: "deposit",
+      status: "completed",
+      method: "easypaisa",
+      reference: "DEP-100202",
+      created_at: new Date(Date.now() - 86400000),
+    },
+    {
+      id: 2,
+      user_id: 2,
+      amount: 100.00,
+      type: "deposit",
+      status: "pending",
+      method: "easypaisa",
+      reference: "DEP-100201",
+      created_at: new Date(),
+    },
+  ]);
+
   const hasSocialTable = await knex.schema.hasTable("social_links");
   if (hasSocialTable) {
     await knex("social_links").del();

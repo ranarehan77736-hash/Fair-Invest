@@ -144,63 +144,72 @@ function WithdrawalsPage() {
             </tr>
           </thead>
           <tbody>
-            {withdrawals.map((item) => {
-              const accountInfo = getWithdrawalAccountInfo(item)
-              return (
-              <tr key={item.id} className="user-row-clickable" onClick={() => setSelectedWithdrawal(item)}>
-                <td>{item.id}</td>
-                <td>{item.userName || userById.get(Number(item.userId))?.name || `User #${item.userId}`}</td>
-                <td>{item.method}</td>
-                <td>${Number(item.amount).toFixed(2)}</td>
-                <td>${Number(item.fee).toFixed(2)}</td>
-                <td>
-                  <div><strong>{accountInfo.bankName}</strong></div>
-                  <div>{accountInfo.accountHolder}</div>
-                  <small>{accountInfo.accountNumber}</small>
-                </td>
-                <td>{item.status}</td>
-                <td>
-                  {item.status === 'completed' ? (
-                    <small>
-                      Paid: ${Number(item.approvedAmount || 0).toFixed(2)} | Refund: $
-                      {Number(item.refundAmount || 0).toFixed(2)}
-                    </small>
-                  ) : (
-                    '-'
-                  )}
-                </td>
-                <td>
-                  <div className="row-action-group">
-                    <select
-                      value={stagedStatusById[item.id] ?? item.status}
-                      onClick={(event) => event.stopPropagation()}
-                      onChange={(e) =>
-                        setStagedStatusById((prev) => ({
-                          ...prev,
-                          [item.id]: e.target.value,
-                        }))
-                      }
-                    >
-                      {options.map((status) => (
-                        <option key={status} value={status}>
-                          {status}
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      className="mini-btn"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        openStatusDialog(item)
-                      }}
-                      disabled={(stagedStatusById[item.id] ?? item.status) === item.status}
-                    >
-                      Save
-                    </button>
-                  </div>
+            {withdrawals.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="table-empty" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--muted)', fontSize: '0.94rem' }}>
+                  No withdrawal requests found.
                 </td>
               </tr>
-            )})}
+            ) : (
+              withdrawals.map((item) => {
+                const accountInfo = getWithdrawalAccountInfo(item)
+                return (
+                  <tr key={item.id} className="user-row-clickable" onClick={() => setSelectedWithdrawal(item)}>
+                    <td>{item.id}</td>
+                    <td>{item.userName || userById.get(Number(item.userId))?.name || `User #${item.userId}`}</td>
+                    <td>{item.method}</td>
+                    <td>${Number(item.amount).toFixed(2)}</td>
+                    <td>${Number(item.fee).toFixed(2)}</td>
+                    <td>
+                      <div><strong>{accountInfo.bankName}</strong></div>
+                      <div>{accountInfo.accountHolder}</div>
+                      <small>{accountInfo.accountNumber}</small>
+                    </td>
+                    <td>{item.status}</td>
+                    <td>
+                      {item.status === 'completed' ? (
+                        <small>
+                          Paid: ${Number(item.approvedAmount || 0).toFixed(2)} | Refund: $
+                          {Number(item.refundAmount || 0).toFixed(2)}
+                        </small>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
+                    <td>
+                      <div className="row-action-group">
+                        <select
+                          value={stagedStatusById[item.id] ?? item.status}
+                          onClick={(event) => event.stopPropagation()}
+                          onChange={(e) =>
+                            setStagedStatusById((prev) => ({
+                              ...prev,
+                              [item.id]: e.target.value,
+                            }))
+                          }
+                        >
+                          {options.map((status) => (
+                            <option key={status} value={status}>
+                              {status}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          className="mini-btn"
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            openStatusDialog(item)
+                          }}
+                          disabled={(stagedStatusById[item.id] ?? item.status) === item.status}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })
+            )}
           </tbody>
         </table>
       </div>
