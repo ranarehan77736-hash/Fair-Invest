@@ -119,8 +119,8 @@ export async function apiRequest(path, { method = 'GET', body, _retry = true } =
         ]
       } else if (path.includes('/admin/users')) {
         fallbackData = [
-          { id: 1, id: 1, role_id: 2, name: 'Admin User', email: 'admin@fairinvest.site', phone: '+92 300 0000000', role: 'admin', is_blocked: false, country: 'Pakistan', walletBalance: 0 },
-          { id: 2, id: 2, role_id: 1, name: 'Rana Rehan', email: 'ranarehan77736@gmail.com', phone: '+92 300 1234567', role: 'user', is_blocked: false, country: 'Pakistan', walletBalance: 1000 },
+          { id: 1, role_id: 2, name: 'Admin User', email: 'admin@fairinvest.site', phone: '+92 300 0000000', role: 'admin', is_blocked: false, country: 'Pakistan', walletBalance: 0 },
+          { id: 2, role_id: 1, name: 'Rana Rehan', email: 'ranarehan77736@gmail.com', phone: '+92 300 1234567', role: 'user', is_blocked: false, country: 'Pakistan', walletBalance: 1000 },
         ]
       } else if (path.includes('/admin/plans')) {
         fallbackData = [

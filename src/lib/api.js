@@ -74,7 +74,7 @@ function saveUserRecord(email, userRecord) {
   localStorage.setItem('fairinvest-users-db', JSON.stringify(users))
 }
 
-function handleMockRequest(path, { method = 'GET', body = {} } = {}) {
+function handleMockRequest(path, { method: _method = 'GET', body = {} } = {}) {
   const normalizedEmail = String(body?.email || 'demo@fairinvest.com').trim().toLowerCase()
   const namePart = normalizedEmail.split('@')[0] || 'Investor'
   const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)

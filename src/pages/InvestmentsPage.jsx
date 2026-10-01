@@ -22,12 +22,6 @@ function InvestmentsPage() {
     [investments, user.balance, user.lockedBalance],
   )
 
-  const handleClaim = async (investment) => {
-    const response = await claimInvestment(investment.rawId)
-    if (response.ok) toast.success(response.message)
-    else toast.error(response.message)
-  }
-
   const handleCreditProfit = async (investment) => {
     const response = await withdrawInvestmentEarning(investment.rawId)
     if (response.ok) toast.success(response.message)

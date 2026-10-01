@@ -424,7 +424,7 @@ INSERT INTO `roles` (`id`, `name`) VALUES
 ON DUPLICATE KEY UPDATE `name`=VALUES(`name`);
 
 INSERT INTO `users` (`id`, `role_id`, `name`, `email`, `phone`, `password_hash`, `is_verified`, `country`) VALUES 
-(1, 2, 'Admin User', 'admin@fairinvest.site', '+92 300 0000000', '$2a$10$GPteSYkxldrWde19QNQTk.qE1woqiJG6nOz2mu0k2ygEdZ/Ll0Cta', 1, 'Pakistan') 
+(1, 2, 'Admin User', 'admin@fairinvest.site', '+92 300 0000000', '$2a$10$nQsETJSZigIGmUhbm8qyrefLw83UsxGp0soJ04Id0m.nHsbxcQK3K', 1, 'Pakistan') 
 ON DUPLICATE KEY UPDATE `email`=VALUES(`email`);
 
 INSERT INTO `wallets` (`id`, `user_id`, `balance`, `locked_balance`) VALUES 

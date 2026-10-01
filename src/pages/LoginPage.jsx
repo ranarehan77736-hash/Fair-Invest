@@ -13,7 +13,7 @@ import Button from '../components/ui/Button.jsx'
 
 function LoginPage() {
   const navigate = useNavigate()
-  const { login, googleAuth, socialLinks } = useAppContext()
+  const { login, socialLinks } = useAppContext()
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
@@ -115,9 +115,6 @@ function LoginPage() {
 
   const socialBg = isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff'
   const socialBorder = isDark ? '1px solid rgba(132, 169, 90, 0.25)' : '1px solid rgba(122, 159, 76, 0.25)'
-
-  const directAuthBg = isDark ? 'rgba(255, 255, 255, 0.04)' : '#ffffff'
-  const directAuthBorder = isDark ? '1px solid rgba(132, 169, 90, 0.2)' : '1px solid rgba(122, 159, 76, 0.2)'
 
   const btnGradient = isDark
     ? 'linear-gradient(135deg, #7a9f4c 0%, #5e7e37 50%, #84a95a 100%)'

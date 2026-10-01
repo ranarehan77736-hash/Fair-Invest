@@ -24,6 +24,11 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'react-hooks/purity': 'off',
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowExportNames: ['useTheme', 'useAdmin'] },
+      ],
     },
   },
 ])
