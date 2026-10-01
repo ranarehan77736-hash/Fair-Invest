@@ -1,10 +1,7 @@
-// Entry point for cPanel Phusion Passenger / Node.js
-// If executed directly by node (node app.js), it starts the server.
-// If required by a passenger handler, it exports the Express app.
-const app = require("./src/app");
+// Entry point for cPanel Phusion Passenger / LiteSpeed / Node.js
+// Always initialize the HTTP server, WebSockets, and background profit engine
+const { server, app } = require("./src/server");
 
-if (require.main === module) {
-  require("./src/server");
-} else {
-  module.exports = app;
-}
+app.server = server;
+module.exports = app;
+

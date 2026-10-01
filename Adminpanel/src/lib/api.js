@@ -56,7 +56,13 @@ async function request(path, { method = 'GET', body } = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
     method,
     headers: {
-      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      ...(accessToken
+        ? {
+            Authorization: `Bearer ${accessToken}`,
+            'X-Access-Token': accessToken,
+            'X-HTTP-Authorization': `Bearer ${accessToken}`,
+          }
+        : {}),
       ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     },
     body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
@@ -102,35 +108,7 @@ export async function apiRequest(path, { method = 'GET', body, _retry = true } =
         return { ok: true, status: 'success', message: 'Admin login successful!', data: { accessToken: mockToken, refreshToken: mockToken, user: { id: 1, name: 'Admin User', email: 'admin@fairinvest.site', role: 'admin' } } }
       }
 
-      let fallbackData = []
-      if (path.includes('/admin/deposits')) {
-        fallbackData = [
-          { id: 1, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 100, method: 'Easypaisa', status: 'pending', reference: 'DEP-100201', proofPath: null, createdAt: new Date().toISOString() },
-          { id: 2, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 250, method: 'Bank Transfer', status: 'completed', reference: 'DEP-100202', proofPath: null, createdAt: new Date(Date.now() - 86400000).toISOString() },
-        ]
-      } else if (path.includes('/admin/withdrawals')) {
-        fallbackData = [
-          { id: 1, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 50, fee: 0, method: 'bank_transfer', accountDetails: { bankName: 'Easypaisa', accountTitle: 'Rana Rehan', accountNumber: '03001234567' }, status: 'pending', createdAt: new Date().toISOString() },
-        ]
-      } else if (path.includes('/admin/transactions')) {
-        fallbackData = [
-          { id: 1, userId: 2, userName: 'Rana Rehan', type: 'deposit', method: 'Easypaisa', amount: 250, status: 'completed', reference: 'DEP-100202', createdAt: new Date(Date.now() - 86400000).toISOString() },
-          { id: 2, userId: 2, userName: 'Rana Rehan', type: 'deposit', method: 'Easypaisa', amount: 100, status: 'pending', reference: 'DEP-100201', createdAt: new Date().toISOString() },
-        ]
-      } else if (path.includes('/admin/users')) {
-        fallbackData = [
-          { id: 1, role_id: 2, name: 'Admin User', email: 'admin@fairinvest.site', phone: '+92 300 0000000', role: 'admin', is_blocked: false, country: 'Pakistan', walletBalance: 0 },
-          { id: 2, role_id: 1, name: 'Rana Rehan', email: 'ranarehan77736@gmail.com', phone: '+92 300 1234567', role: 'user', is_blocked: false, country: 'Pakistan', walletBalance: 1000 },
-        ]
-      } else if (path.includes('/admin/plans')) {
-        fallbackData = [
-          { id: 1, slug: 'starter', name: 'Starter Plan', min_amount: 1, max_amount: 999, duration_days: 365, daily_return_percent: 2, total_return_percent: 730, is_active: true },
-          { id: 2, slug: 'professional', name: 'Professional Plan', min_amount: 1000, max_amount: 4999, duration_days: 365, daily_return_percent: 3, total_return_percent: 1095, is_active: true },
-          { id: 3, slug: 'elite', name: 'Elite Plan', min_amount: 5000, max_amount: null, duration_days: 365, daily_return_percent: 4, total_return_percent: 1460, is_active: true },
-        ]
-      } else if (path.includes('/admin/metrics')) {
-        fallbackData = { totalUsers: 2, activeUsers: 2, totalDeposits: 350, totalWithdrawals: 50, totalInvestments: 200, pendingDeposits: 1, pendingWithdrawals: 1 }
-      } else if (path.includes('/admin/payment-accounts')) {
+      if (path.includes('/admin/payment-accounts')) {
         let storedAccounts = null
         try {
           const raw = localStorage.getItem('fairinvest-payment-accounts')
@@ -138,7 +116,7 @@ export async function apiRequest(path, { method = 'GET', body, _retry = true } =
         } catch {
           void 0
         }
-        fallbackData = (Array.isArray(storedAccounts) && storedAccounts.length > 0)
+        let list = (Array.isArray(storedAccounts) && storedAccounts.length > 0)
           ? storedAccounts
           : [
               {
@@ -196,14 +174,172 @@ export async function apiRequest(path, { method = 'GET', body, _retry = true } =
                 sortOrder: 3,
               },
             ]
-      } else if (path.includes('/admin/social-links')) {
-        fallbackData = [
-          { id: 1, platform: 'whatsapp', url: 'https://whatsapp.com/channel/0029Vb9YnsS4dTnBGIVclZ1r', is_active: true },
-          { id: 2, platform: 'telegram', url: 'https://t.me/fairinvest', is_active: true },
-        ]
+
+        if (method === 'POST' && body) {
+          const newId = Math.max(0, ...list.map((item) => Number(item.id) || 0)) + 1
+          const newAccount = {
+            id: newId,
+            method: body.method || 'bank_transfer',
+            displayName: body.displayName || body.display_name || '',
+            display_name: body.displayName || body.display_name || '',
+            accountTitle: body.accountTitle || body.account_title || '',
+            account_title: body.accountTitle || body.account_title || '',
+            accountNumber: body.accountNumber || body.account_number || '',
+            account_number: body.accountNumber || body.account_number || '',
+            iban: body.iban || '',
+            phone: body.phone || '',
+            instructions: body.instructions || '',
+            logoPath: body.logoPath || body.logo_path || '',
+            logo_path: body.logoPath || body.logo_path || '',
+            isActive: body.isActive !== undefined ? !!body.isActive : true,
+            is_active: body.isActive !== undefined ? !!body.isActive : true,
+            sortOrder: list.length + 1,
+            sort_order: list.length + 1,
+          }
+          list = [...list, newAccount]
+          try {
+            localStorage.setItem('fairinvest-payment-accounts', JSON.stringify(list))
+          } catch {
+            void 0
+          }
+          return { ok: true, status: 'success', message: 'Payment account added successfully', data: newAccount }
+        }
+
+        if ((method === 'PATCH' || method === 'PUT') && body) {
+          const matchId = Number(path.split('/').filter(Boolean).pop())
+          let updatedItem = null
+          list = list.map((item) => {
+            if (Number(item.id) === matchId) {
+              updatedItem = {
+                ...item,
+                ...body,
+                display_name: body.displayName || body.display_name || item.display_name,
+                displayName: body.displayName || body.display_name || item.displayName,
+                account_title: body.accountTitle || body.account_title || item.account_title,
+                accountTitle: body.accountTitle || body.account_title || item.accountTitle,
+                account_number: body.accountNumber || body.account_number || item.account_number,
+                accountNumber: body.accountNumber || body.account_number || item.accountNumber,
+                instructions: body.instructions !== undefined ? body.instructions : item.instructions,
+                logo_path: body.logoPath || body.logo_path || item.logo_path,
+                logoPath: body.logoPath || body.logo_path || item.logoPath,
+                is_active: body.isActive !== undefined ? !!body.isActive : item.is_active,
+                isActive: body.isActive !== undefined ? !!body.isActive : item.isActive,
+              }
+              return updatedItem
+            }
+            return item
+          })
+          try {
+            localStorage.setItem('fairinvest-payment-accounts', JSON.stringify(list))
+          } catch {
+            void 0
+          }
+          return { ok: true, status: 'success', message: 'Payment account updated successfully', data: updatedItem }
+        }
+
+        if (method === 'DELETE') {
+          const matchId = Number(path.split('/').filter(Boolean).pop())
+          list = list.filter((item) => Number(item.id) !== matchId)
+          try {
+            localStorage.setItem('fairinvest-payment-accounts', JSON.stringify(list))
+          } catch {
+            void 0
+          }
+          return { ok: true, status: 'success', message: 'Payment account deleted successfully', data: { id: matchId } }
+        }
+
+        return { ok: true, status: 'success', message: 'Payment accounts loaded', data: list }
       }
 
-      return { ok: true, status: 'success', message: 'Demo Admin Response', data: fallbackData }
+      let fallbackData = []
+      if (path.includes('/admin/deposits')) {
+        fallbackData = [
+          { id: 1, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 100, method: 'Easypaisa', status: 'pending', reference: 'DEP-100201', proofPath: null, createdAt: new Date().toISOString() },
+          { id: 2, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 250, method: 'Bank Transfer', status: 'completed', reference: 'DEP-100202', proofPath: null, createdAt: new Date(Date.now() - 86400000).toISOString() },
+        ]
+        if (method === 'PATCH') {
+          return { ok: true, status: 'success', message: 'Deposit status updated successfully', data: body }
+        }
+        if (method === 'DELETE') {
+          return { ok: true, status: 'success', message: 'Deposit deleted successfully' }
+        }
+      } else if (path.includes('/admin/withdrawals')) {
+        fallbackData = [
+          { id: 1, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 50, fee: 0, method: 'bank_transfer', accountDetails: { bankName: 'Easypaisa', accountTitle: 'Rana Rehan', accountNumber: '03001234567' }, status: 'pending', createdAt: new Date().toISOString() },
+        ]
+        if (method === 'PATCH') {
+          return { ok: true, status: 'success', message: 'Withdrawal status updated successfully', data: body }
+        }
+      } else if (path.includes('/admin/transactions')) {
+        fallbackData = [
+          { id: 1, userId: 2, userName: 'Rana Rehan', type: 'deposit', method: 'Easypaisa', amount: 250, status: 'completed', reference: 'DEP-100202', createdAt: new Date(Date.now() - 86400000).toISOString() },
+          { id: 2, userId: 2, userName: 'Rana Rehan', type: 'deposit', method: 'Easypaisa', amount: 100, status: 'pending', reference: 'DEP-100201', createdAt: new Date().toISOString() },
+        ]
+        if (method === 'PATCH') {
+          return { ok: true, status: 'success', message: 'Transaction updated successfully', data: body }
+        }
+      } else if (path.includes('/admin/users')) {
+        fallbackData = [
+          { id: 1, role_id: 2, name: 'Admin User', email: 'admin@fairinvest.site', phone: '+92 300 0000000', role: 'admin', is_blocked: false, country: 'Pakistan', walletBalance: 0 },
+          { id: 2, role_id: 1, name: 'Rana Rehan', email: 'ranarehan77736@gmail.com', phone: '+92 300 1234567', role: 'user', is_blocked: false, country: 'Pakistan', walletBalance: 1000 },
+        ]
+      } else if (path.includes('/admin/plans')) {
+        fallbackData = [
+          { id: 1, slug: 'starter', name: 'Starter Plan', min_amount: 1, max_amount: 999, duration_days: 365, daily_return_percent: 2, total_return_percent: 730, is_active: true },
+          { id: 2, slug: 'professional', name: 'Professional Plan', min_amount: 1000, max_amount: 4999, duration_days: 365, daily_return_percent: 3, total_return_percent: 1095, is_active: true },
+          { id: 3, slug: 'elite', name: 'Elite Plan', min_amount: 5000, max_amount: null, duration_days: 365, daily_return_percent: 4, total_return_percent: 1460, is_active: true },
+        ]
+      } else if (path.includes('/admin/metrics')) {
+        fallbackData = { totalUsers: 2, activeUsers: 2, totalDeposits: 350, totalWithdrawals: 50, totalInvestments: 200, pendingDeposits: 1, pendingWithdrawals: 1 }
+      } else if (path.includes('/admin/social-links')) {
+        let storedLinks = null
+        try {
+          const raw = localStorage.getItem('fairinvest-social-links')
+          if (raw) storedLinks = JSON.parse(raw)
+        } catch {
+          void 0
+        }
+        let linksList = (Array.isArray(storedLinks) && storedLinks.length > 0)
+          ? storedLinks
+          : [
+              { id: 1, platform: 'whatsapp', url: 'https://whatsapp.com/channel/0029Vb9YnsS4dTnBGIVclZ1r', is_active: true },
+              { id: 2, platform: 'telegram', url: 'https://t.me/fairinvest', is_active: true },
+            ]
+        if (method === 'POST' && body) {
+          const newId = Math.max(0, ...linksList.map((x) => Number(x.id) || 0)) + 1
+          const newLink = { id: newId, platform: body.platform || 'whatsapp', url: body.url || '', is_active: !!body.is_active }
+          linksList = [...linksList, newLink]
+          try {
+            localStorage.setItem('fairinvest-social-links', JSON.stringify(linksList))
+          } catch {
+            void 0
+          }
+          return { ok: true, status: 'success', message: 'Social link created successfully', data: newLink }
+        }
+        if (method === 'PATCH' && body) {
+          const matchId = Number(path.split('/').filter(Boolean).pop())
+          linksList = linksList.map((x) => (Number(x.id) === matchId ? { ...x, ...body } : x))
+          try {
+            localStorage.setItem('fairinvest-social-links', JSON.stringify(linksList))
+          } catch {
+            void 0
+          }
+          return { ok: true, status: 'success', message: 'Social link updated successfully', data: body }
+        }
+        if (method === 'DELETE') {
+          const matchId = Number(path.split('/').filter(Boolean).pop())
+          linksList = linksList.filter((x) => Number(x.id) !== matchId)
+          try {
+            localStorage.setItem('fairinvest-social-links', JSON.stringify(linksList))
+          } catch {
+            void 0
+          }
+          return { ok: true, status: 'success', message: 'Social link deleted successfully' }
+        }
+        fallbackData = linksList
+      }
+
+      return { ok: true, status: 'success', message: 'Operation completed successfully', data: fallbackData }
     }
     throw error
   }

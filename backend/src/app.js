@@ -51,6 +51,14 @@ app.use("/uploads", (_req, res, next) => {
   next();
 });
 app.use("/uploads", express.static(uploadsRoot));
+app.get("/health", (_req, res) => {
+  res.json({
+    status: "online",
+    service: "FairInvest Production API",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.use("/api", apiRouter);
 
 const frontendRoot = env.frontendRoot || path.resolve(process.cwd(), "..");
@@ -75,11 +83,16 @@ if (canServeFrontend) {
     res.sendFile(frontendIndex);
   });
 } else {
+  // Pure API subdomain mode (api.fairinvest.site)
+  // Also mount apiRouter at root so endpoints resolve with or without /api prefix
+  app.use("/", apiRouter);
+
   app.get("/", (_req, res) => {
     res.json({
       status: "online",
-      service: "FairInvest API",
+      service: "FairInvest Production API",
       health: "/api/health",
+      version: "1.0.0",
     });
   });
 }

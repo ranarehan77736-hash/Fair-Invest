@@ -1,12 +1,20 @@
 # ==============================================================================
-# FairInvest Backend API cPanel / Apache Configuration
+# FairInvest Backend API cPanel / LiteSpeed Configuration
 # Ensures Authorization header is passed to Node.js backend
 # ==============================================================================
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  # Pass Authorization header to Node.js application (prevents 401 on Apache)
+
+  # Pass Authorization header to Node.js application (prevents 401 on Apache/LiteSpeed)
   RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+  RewriteRule .* - [E=HTTP_X_ACCESS_TOKEN:%{HTTP:X-Access-Token}]
+
+  # If not handled by Passenger module directly, rewrite non-files to app.js
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ app.js [QSA,L]
 </IfModule>
 
 # Disable directory browsing
 Options -Indexes
+

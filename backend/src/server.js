@@ -57,3 +57,5 @@ server.listen(env.port, async () => {
 server.on("close", () => {
   if (autoProfitTimer) clearInterval(autoProfitTimer);
 });
+
+module.exports = { server, app };
