@@ -160,6 +160,7 @@ function LoginPage() {
                 Admin Email
               </label>
               <div
+                className="admin-login-field"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -167,7 +168,7 @@ function LoginPage() {
                   borderRadius: '12px',
                   background: inputBg,
                   border: inputBorder,
-                  padding: '0 8px 0 14px',
+                  padding: '0 14px',
                   gap: '10px',
                   transition: 'all 0.25s ease',
                 }}
@@ -181,15 +182,14 @@ function LoginPage() {
                   required
                   style={{
                     flex: 1,
-                    height: '36px',
-                    borderRadius: '8px',
-                    background: 'rgba(238, 244, 255, 0.96)',
+                    height: '100%',
+                    background: 'transparent',
                     border: 'none',
                     outline: 'none',
-                    color: '#0f172a',
-                    fontSize: '0.92rem',
-                    fontWeight: 600,
-                    padding: '0 10px',
+                    color: inputText,
+                    fontSize: '0.94rem',
+                    fontWeight: 500,
+                    padding: 0,
                     boxSizing: 'border-box',
                   }}
                 />
@@ -201,6 +201,7 @@ function LoginPage() {
                 Password
               </label>
               <div
+                className="admin-login-field"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -208,7 +209,7 @@ function LoginPage() {
                   borderRadius: '12px',
                   background: inputBg,
                   border: inputBorder,
-                  padding: '0 8px 0 14px',
+                  padding: '0 14px',
                   gap: '10px',
                   transition: 'all 0.25s ease',
                 }}
@@ -222,15 +223,14 @@ function LoginPage() {
                   required
                   style={{
                     flex: 1,
-                    height: '36px',
-                    borderRadius: '8px',
-                    background: 'rgba(238, 244, 255, 0.96)',
+                    height: '100%',
+                    background: 'transparent',
                     border: 'none',
                     outline: 'none',
-                    color: '#0f172a',
-                    fontSize: '0.92rem',
-                    fontWeight: 600,
-                    padding: '0 10px',
+                    color: inputText,
+                    fontSize: '0.94rem',
+                    fontWeight: 500,
+                    padding: 0,
                     boxSizing: 'border-box',
                   }}
                 />

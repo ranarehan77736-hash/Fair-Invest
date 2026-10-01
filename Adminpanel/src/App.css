@@ -12,9 +12,17 @@
 .admin-login-page input:-webkit-autofill,
 .admin-login-page input:-webkit-autofill:hover,
 .admin-login-page input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #0f172a !important;
-  -webkit-box-shadow: 0 0 0px 1000px #eef4ff inset !important;
+  -webkit-text-fill-color: inherit !important;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
   transition: background-color 5000s ease-in-out 0s;
+}
+
+.admin-login-field input {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
 }
 
 .login-card {
