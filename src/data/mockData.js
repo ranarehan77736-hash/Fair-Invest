@@ -96,8 +96,8 @@ export const initialReferralTree = {
 }
 
 export const initialUser = {
-  name: 'John Doe',
-  email: 'demo@horizoninvest.com',
+  name: 'Investor User',
+  email: 'investor@fairinvest.site',
   phone: '+92 300 1234567',
   referralCode: 'INVPRO10JD',
   balance: 12450,

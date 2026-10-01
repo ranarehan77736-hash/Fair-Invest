@@ -45,10 +45,10 @@ const DEFAULT_MOCK_USERS = {
     totalDeposits: 0.00,
     activeInvestments: 0,
   },
-  'demo@fairinvest.com': {
+  'investor@fairinvest.site': {
     id: 'user-3',
-    name: 'Demo User',
-    email: 'demo@fairinvest.com',
+    name: 'Active Investor',
+    email: 'investor@fairinvest.site',
     password: 'password123',
     balance: 0.00,
     lockedBalance: 0.00,
@@ -75,7 +75,7 @@ function saveUserRecord(email, userRecord) {
 }
 
 function handleMockRequest(path, { method: _method = 'GET', body = {} } = {}) {
-  const normalizedEmail = String(body?.email || 'demo@fairinvest.com').trim().toLowerCase()
+  const normalizedEmail = String(body?.email || 'investor@fairinvest.site').trim().toLowerCase()
   const namePart = normalizedEmail.split('@')[0] || 'Investor'
   const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)
 
@@ -192,12 +192,12 @@ function handleMockRequest(path, { method: _method = 'GET', body = {} } = {}) {
     const userProfile = stored
       ? JSON.parse(stored)
       : {
-          id: 'demo-user-1',
+          id: 'user-primary',
           name: 'Investor',
-          email: 'demo@fairinvest.com',
+          email: 'investor@fairinvest.site',
           phone: '',
           country: 'Pakistan',
-          referralCode: 'DEMO789',
+          referralCode: 'FAIR789',
           balance: 0.00,
           lockedBalance: 0.00,
           totalDeposits: 0.00,
@@ -301,6 +301,176 @@ function handleMockRequest(path, { method: _method = 'GET', body = {} } = {}) {
       ok: true,
       status: 'success',
       data: stored ? JSON.parse(stored) : [],
+    }
+  }
+
+  if (path === '/wallet/deposit') {
+    let amount = 0
+    let method = 'bank_transfer'
+    let paymentAccountId = null
+    if (typeof FormData !== 'undefined' && body instanceof FormData) {
+      amount = Number(body.get('amount')) || 0
+      method = String(body.get('method') || 'bank_transfer')
+      paymentAccountId = body.get('paymentAccountId') || null
+    } else if (body && typeof body === 'object') {
+      amount = Number(body.amount) || 0
+      method = String(body.method || 'bank_transfer')
+      paymentAccountId = body.paymentAccountId || null
+    }
+
+    const newDeposit = {
+      id: Date.now(),
+      amount,
+      method,
+      paymentAccountId,
+      status: 'pending',
+      reference: `DEP-${Math.floor(100000 + Math.random() * 900000)}`,
+      createdAt: new Date().toISOString(),
+    }
+
+    try {
+      const existing = localStorage.getItem('fairinvest-user-deposits')
+      const parsed = existing ? JSON.parse(existing) : []
+      localStorage.setItem('fairinvest-user-deposits', JSON.stringify([newDeposit, ...parsed]))
+    } catch {
+      void 0
+    }
+
+    try {
+      const existingTx = localStorage.getItem('fairinvest-user-transactions')
+      const parsedTx = existingTx ? JSON.parse(existingTx) : []
+      const newTx = {
+        id: Date.now(),
+        type: 'deposit',
+        amount,
+        method,
+        status: 'pending',
+        reference: newDeposit.reference,
+        createdAt: new Date().toISOString(),
+      }
+      localStorage.setItem('fairinvest-user-transactions', JSON.stringify([newTx, ...parsedTx]))
+    } catch {
+      void 0
+    }
+
+    return {
+      ok: true,
+      status: 'success',
+      message: 'Deposit request submitted successfully! It is pending verification.',
+      data: newDeposit,
+    }
+  }
+
+  if (path === '/wallet/withdraw') {
+    const amount = Number(body?.amount) || 0
+    const method = String(body?.method || 'bank_transfer')
+    const accountDetails = body?.accountDetails || {}
+
+    let userProfile = null
+    try {
+      const stored = localStorage.getItem('fairinvest-local-user')
+      if (stored) userProfile = JSON.parse(stored)
+    } catch {
+      void 0
+    }
+
+    if (userProfile && Number(userProfile.balance || 0) < amount) {
+      return { ok: false, status: 'error', message: 'Insufficient wallet balance.' }
+    }
+
+    if (userProfile) {
+      userProfile.balance = Math.max(0, Number(userProfile.balance || 0) - amount)
+      localStorage.setItem('fairinvest-local-user', JSON.stringify(userProfile))
+    }
+
+    const newWithdrawal = {
+      id: Date.now(),
+      amount,
+      method,
+      accountDetails,
+      status: 'pending',
+      reference: `WTH-${Math.floor(100000 + Math.random() * 900000)}`,
+      createdAt: new Date().toISOString(),
+    }
+
+    try {
+      const existing = localStorage.getItem('fairinvest-user-withdrawals')
+      const parsed = existing ? JSON.parse(existing) : []
+      localStorage.setItem('fairinvest-user-withdrawals', JSON.stringify([newWithdrawal, ...parsed]))
+    } catch {
+      void 0
+    }
+
+    try {
+      const existingTx = localStorage.getItem('fairinvest-user-transactions')
+      const parsedTx = existingTx ? JSON.parse(existingTx) : []
+      const newTx = {
+        id: Date.now(),
+        type: 'withdrawal',
+        amount,
+        method,
+        status: 'pending',
+        reference: newWithdrawal.reference,
+        createdAt: new Date().toISOString(),
+      }
+      localStorage.setItem('fairinvest-user-transactions', JSON.stringify([newTx, ...parsedTx]))
+    } catch {
+      void 0
+    }
+
+    return {
+      ok: true,
+      status: 'success',
+      message: 'Withdrawal request submitted successfully!',
+      data: newWithdrawal,
+    }
+  }
+
+  if (path === '/investments/invest') {
+    const amount = Number(body?.amount) || 0
+    const planId = Number(body?.planId) || 1
+
+    let userProfile = null
+    try {
+      const stored = localStorage.getItem('fairinvest-local-user')
+      if (stored) userProfile = JSON.parse(stored)
+    } catch {
+      void 0
+    }
+
+    if (userProfile && Number(userProfile.balance || 0) < amount) {
+      return { ok: false, status: 'error', message: 'Insufficient wallet balance to invest.' }
+    }
+
+    if (userProfile) {
+      userProfile.balance = Math.max(0, Number(userProfile.balance || 0) - amount)
+      userProfile.activeInvestments = (Number(userProfile.activeInvestments) || 0) + 1
+      localStorage.setItem('fairinvest-local-user', JSON.stringify(userProfile))
+    }
+
+    const newInvestment = {
+      id: Date.now(),
+      planId,
+      amount,
+      status: 'active',
+      dailyProfit: Number((amount * 0.02).toFixed(2)),
+      earnedProfit: 0,
+      createdAt: new Date().toISOString(),
+    }
+
+    try {
+      const existing = localStorage.getItem('fairinvest-user-investments')
+      const parsed = existing ? JSON.parse(existing) : []
+      localStorage.setItem('fairinvest-user-investments', JSON.stringify([newInvestment, ...parsed]))
+    } catch {
+      void 0
+    }
+
+    return {
+      ok: true,
+      status: 'success',
+      message: 'Investment activated successfully!',
+      data: newInvestment,
     }
   }
 
@@ -421,7 +591,7 @@ function handleMockRequest(path, { method: _method = 'GET', body = {} } = {}) {
     return {
       ok: true,
       status: 'success',
-      data: { room_key: 'demo-chat-room-101' },
+      data: { room_key: 'support-chat-room-101' },
     }
   }
 
@@ -443,7 +613,7 @@ function handleMockRequest(path, { method: _method = 'GET', body = {} } = {}) {
     }
   }
 
-  return { ok: true, status: 'success', message: 'Operation successful (Frontend Demo)', data: [] }
+  return { ok: true, status: 'success', message: 'Operation completed successfully.', data: [] }
 }
 
 async function request(path, { method = 'GET', body } = {}) {
