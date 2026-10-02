@@ -5,7 +5,6 @@ import { Toaster } from 'sonner'
 import { useAppContext } from './context/AppContext.jsx'
 import { useTheme } from './context/ThemeContext.jsx'
 import ThemeToggle from './components/ThemeToggle.jsx'
-import WhatsAppJoinPrompt from './components/WhatsAppJoinPrompt.jsx'
 import AppInstallPrompt from './components/AppInstallPrompt.jsx'
 import AppLayout from './layouts/AppLayout.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
@@ -96,7 +95,6 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-      <WhatsAppJoinPrompt />
       <AppInstallPrompt />
       <Toaster theme={theme} position="top-right" richColors />
     </>

@@ -55,15 +55,10 @@ function AppInstallPrompt() {
   }, [apkDownloadUrl])
 
   useEffect(() => {
-    const dismissedAt = Number(localStorage.getItem(storageKey) || 0)
-    const recentlyDismissed = Date.now() - dismissedAt < 12 * 60 * 60 * 1000
-    if (!recentlyDismissed && !isAppInstalled()) setIsOpen(true)
-
     const onBeforeInstall = (event) => {
       event.preventDefault()
       deferredPromptRef.current = event
       setCanNativeInstall(true)
-      setIsOpen(true)
     }
 
     const onInstalled = () => {

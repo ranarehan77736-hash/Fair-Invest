@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { motion } from 'motion/react'
 import { ArrowRight, Lock, Mail, ShieldCheck, Sparkles, TrendingUp, Users } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAppContext } from '../context/AppContext.jsx'
@@ -186,11 +185,8 @@ function LoginPage() {
         }}
       >
         {/* Left Side — FairInvest.com Brand Showcase Pane */}
-        <motion.section
+        <section
           className="brand-pane"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4 }}
           style={{ display: 'flex', flexDirection: 'column', gap: '1.6rem', color: titleColor }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -395,14 +391,11 @@ function LoginPage() {
               </div>
             </div>
           ) : null}
-        </motion.section>
+        </section>
 
         {/* Right Side — Sign In Card Form */}
-        <motion.div
+        <div
           className="auth-card"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
           style={{ width: '100%' }}
         >
           <div
@@ -566,7 +559,7 @@ function LoginPage() {
               </Link>
             </p>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   )
