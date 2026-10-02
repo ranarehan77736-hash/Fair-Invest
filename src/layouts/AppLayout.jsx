@@ -9,11 +9,13 @@ import {
   LayoutDashboard,
   Info,
   LogOut,
+  Menu,
   MessageCircle,
   MessageSquare,
   Settings,
   TrendingUp,
   Users,
+  X,
 } from 'lucide-react'
 import { useAppContext } from '../context/AppContext.jsx'
 import FairInvestLogo from '../components/FairInvestLogo.jsx'
@@ -41,10 +43,22 @@ function AppLayout() {
   const supportedSocialLinks = useMemo(() => getSupportedSocialLinks(socialLinks), [socialLinks])
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const [isChatOpen, setIsChatOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
+    setIsMobileMenuOpen(false)
     window.scrollTo(0, 0)
   }, [location.pathname])
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return undefined
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = originalOverflow
+    }
+  }, [isMobileMenuOpen])
+
   const orderedNotifications = useMemo(
     () =>
       [...notifications].sort(
@@ -64,7 +78,8 @@ function AppLayout() {
 
   return (
     <div className="app-shell">
-      <aside className="sidebar">
+      {/* 1. Desktop Sidebar (hidden on mobile via CSS) */}
+      <aside className="sidebar desktop-sidebar">
         <div className="brand-lockup" style={{ padding: '0.65rem 0.5rem' }}>
           <FairInvestLogo size="medium" />
         </div>
@@ -114,12 +129,126 @@ function AppLayout() {
         </button>
       </aside>
 
+      {/* 2. Mobile Menu Backdrop & Drawer */}
+      <div
+        className={`mobile-menu-backdrop ${isMobileMenuOpen ? 'open' : ''}`}
+        onClick={() => setIsMobileMenuOpen(false)}
+        aria-hidden="true"
+      />
+      <aside
+        className={`mobile-menu-drawer ${isMobileMenuOpen ? 'open' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation Menu"
+      >
+        <div className="mobile-drawer-head">
+          <FairInvestLogo size="medium" />
+          <button
+            type="button"
+            className="mobile-drawer-close"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-label="Close menu"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="mobile-drawer-user">
+          <span className="avatar">{initials}</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <strong style={{ display: 'block', fontSize: '0.92rem', color: '#f0fdf4', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {user.name}
+            </strong>
+            <span style={{ fontSize: '0.74rem', color: '#9bc268', fontWeight: 600 }}>
+              Premium Member
+            </span>
+          </div>
+        </div>
+
+        <div className="mobile-drawer-balance">
+          <p className="balance-title">Wallet Balance</p>
+          <h4 className="balance-amt">${Number(user.balance || 0).toFixed(2)}</h4>
+          <p className="balance-locked">
+            Locked Capital: ${Number(user.lockedBalance || 0).toFixed(2)}
+          </p>
+        </div>
+
+        <nav className="mobile-drawer-nav">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            >
+              <item.icon size={18} />
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
+        </nav>
+
+        <button
+          className="mini-btn install-header-btn"
+          type="button"
+          style={{ width: '100%', marginTop: '0.85rem', height: '40px', justifyContent: 'center' }}
+          onClick={() => {
+            setIsMobileMenuOpen(false)
+            if (typeof window.horizoneInstallApp === 'function') {
+              window.horizoneInstallApp()
+            } else {
+              requestAppInstall()
+            }
+          }}
+        >
+          App Download
+        </button>
+
+        {supportedSocialLinks.length ? (
+          <div className="sidebar-social-links" style={{ marginTop: '0.85rem' }}>
+            <p className="muted small">Official Community</p>
+            <div className="sidebar-social-list">
+              {supportedSocialLinks.map((link, idx) => (
+                <a
+                  key={link.id || link.platform || idx}
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="sidebar-social-item"
+                  aria-label={link.label}
+                  title={link.label}
+                >
+                  <link.Icon size={14} />
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        <button className="logout-btn" onClick={logout} style={{ marginTop: '1rem' }}>
+          <LogOut size={16} /> Logout
+        </button>
+      </aside>
+
+      {/* 3. Main Content & Responsive Header */}
       <main className="main-content">
         <header className="topbar glass-card">
-          <div>
+          <div className="mobile-header-brand">
+            <button
+              type="button"
+              className="mobile-menu-btn"
+              onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu size={22} />
+            </button>
+            <FairInvestLogo size="small" />
+          </div>
+
+          <div className="topbar-desktop-user">
             <p className="muted">Welcome back</p>
             <h2>{user.name}</h2>
           </div>
+
           <div className="top-actions">
             <ThemeToggle compact className="theme-toggle-inline" />
             <button
@@ -147,7 +276,14 @@ function AppLayout() {
             >
               <MessageSquare size={16} />
             </button>
-            <div className="avatar-wrap">
+            <div
+              className="avatar-wrap"
+              onClick={() => setIsMobileMenuOpen(true)}
+              role="button"
+              tabIndex={0}
+              aria-label="User profile and menu"
+              style={{ cursor: 'pointer' }}
+            >
               <span className="avatar">{initials}</span>
               <div>
                 <strong>{user.name}</strong>
