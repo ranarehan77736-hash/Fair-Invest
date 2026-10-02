@@ -63,6 +63,7 @@ function DepositPage() {
 
   const methodLabel = {
     bank_transfer: 'Bank Transfer',
+    opay: 'OPay',
     easypaisa: 'Easypaisa',
     jazzcash: 'JazzCash',
     nayapay: 'NayaPay',
@@ -72,6 +73,7 @@ function DepositPage() {
   }
   const iconForMethod = {
     bank_transfer: Building2,
+    opay: Smartphone,
     easypaisa: Smartphone,
     jazzcash: Smartphone,
     nayapay: Smartphone,
@@ -307,7 +309,7 @@ function DepositPage() {
                             <QrCode size={16} /> Scan & Pay Guidelines:
                           </h4>
                           <ol>
-                            <li>Open your <strong>Digitt+</strong>, <strong>Raast</strong>, <strong>Easypaisa</strong>, <strong>JazzCash</strong>, or Mobile Banking app.</li>
+                            <li>Open your <strong>Digitt+</strong>, <strong>Raast</strong>, <strong>OPay</strong>, <strong>Easypaisa</strong>, <strong>JazzCash</strong>, or Mobile Banking app.</li>
                             <li>Tap <strong>Scan QR</strong> or <strong>Scan & Pay</strong>.</li>
                             <li>Point your camera at the QR code above (or take a screenshot to upload from gallery).</li>
                             <li>Verify Merchant Name: <strong>MashAllah Bhatti Mobilee</strong>.</li>

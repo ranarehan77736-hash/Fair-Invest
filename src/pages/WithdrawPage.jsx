@@ -41,6 +41,7 @@ function WithdrawPage() {
     { id: 'standard-chartered', displayName: 'Standard Chartered Pakistan', method: 'bank_transfer', logoPath: '/bank-logos/standard-chartered.jfif' },
     { id: 'js-bank', displayName: 'JS Bank', method: 'bank_transfer', logoPath: '/bank-logos/js-bank.png' },
     { id: 'silkbank', displayName: 'Silkbank', method: 'bank_transfer', logoPath: '/bank-logos/silk-bank.png' },
+    { id: 'opay', displayName: 'OPay', method: 'opay', logoPath: '/bank-logos/opay.png' },
     { id: 'easypaisa', displayName: 'Easypaisa', method: 'easypaisa', logoPath: '/bank-logos/easypaisa.png' },
     { id: 'jazzcash', displayName: 'JazzCash', method: 'jazzcash', logoPath: '/bank-logos/jazzcash.png' },
     { id: 'nayapay', displayName: 'NayaPay', method: 'nayapay', logoPath: '/bank-logos/nayapay.png' },
@@ -56,6 +57,7 @@ function WithdrawPage() {
   const method = selectedPayoutAccount?.method || 'bank_transfer'
   const methodLabel = {
     bank_transfer: 'Bank Transfer',
+    opay: 'OPay',
     easypaisa: 'Easypaisa',
     jazzcash: 'JazzCash',
     nayapay: 'NayaPay',
@@ -65,6 +67,7 @@ function WithdrawPage() {
   }
   const iconForMethod = {
     bank_transfer: Building2,
+    opay: Smartphone,
     easypaisa: Smartphone,
     jazzcash: Smartphone,
     nayapay: Smartphone,

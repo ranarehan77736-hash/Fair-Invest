@@ -121,6 +121,18 @@ const DEFAULT_PAYMENT_ACCOUNTS = [
     sortOrder: 3,
     isActive: true,
   },
+  {
+    id: 4,
+    method: 'opay',
+    displayName: 'OPay Official',
+    accountTitle: 'FairInvest Official',
+    accountNumber: '0300-9876543',
+    phone: '0300-9876543',
+    instructions: 'Send via OPay wallet/account and submit transaction ID with screenshot.',
+    logoPath: '/bank-logos/opay.png',
+    sortOrder: 4,
+    isActive: true,
+  },
 ]
 
   const [paymentAccounts, setPaymentAccounts] = useState(() => {
@@ -281,6 +293,7 @@ const DEFAULT_PAYMENT_ACCOUNTS = [
         method:
           {
             bank_transfer: 'Bank Transfer',
+            opay: 'OPay',
             easypaisa: 'Easypaisa',
             jazzcash: 'JazzCash',
             nayapay: 'NayaPay',

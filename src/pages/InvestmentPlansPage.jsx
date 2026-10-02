@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import { useState } from 'react'
 import { FaGem } from 'react-icons/fa6'
-import { FiArrowUpRight, FiClock, FiDollarSign, FiTrendingUp, FiShield, FiZap, FiLock, FiHeadphones, FiCheckCircle, FiInfo } from 'react-icons/fi'
+import { FiArrowUpRight, FiClock, FiDollarSign, FiTrendingUp, FiShield, FiZap, FiLock, FiHeadphones, FiCheckCircle, FiInfo, FiStar } from 'react-icons/fi'
 import { RiCheckboxCircleFill, RiRocket2Line, RiVipCrownLine } from 'react-icons/ri'
 import { IoFlashOutline } from 'react-icons/io5'
 import { toast } from 'sonner'
@@ -193,25 +193,26 @@ function InvestmentPlansPage() {
           return (
             <motion.article
               key={plan.id}
-              className={`glass-card plan-card-modern ${toneMap[plan.slug]} ${isPopular ? 'popular' : ''}`}
+              className={`glass-card plan-card-modern ${toneMap[plan.slug] || 'starter'} ${isPopular ? 'popular' : ''}`}
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              {isPopular && (
-                <div className="plan-popular-tag">
-                  MOST POPULAR
-                </div>
-              )}
-
               {/* Cover Image Header */}
               <div className="plan-cover-wrap">
                 <img className="plan-cover-img" src={coverImage} alt={plan.name} loading="lazy" />
                 <div className="plan-cover-overlay">
                   <div className="plan-cover-top">
-                    <span className="plan-icon-badge">
-                      <PlanIcon size={18} />
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', zIndex: 3 }}>
+                      <span className="plan-icon-badge">
+                        <PlanIcon size={18} />
+                      </span>
+                      {isPopular && (
+                        <span className="plan-popular-pill">
+                          <FiStar size={11} style={{ marginRight: '2px' }} /> MOST POPULAR
+                        </span>
+                      )}
+                    </div>
                     <span className="plan-daily-badge">
                       <FiZap size={13} /> {plan.dailyReturn}% Daily ROI
                     </span>
@@ -256,13 +257,8 @@ function InvestmentPlansPage() {
 
                 {/* Action Button */}
                 <button
-                  className={`plan-cta-btn ${toneMap[plan.slug] || 'elite'}`}
+                  className={`plan-cta-btn ${toneMap[plan.slug] || 'starter'} ${isPopular ? 'popular' : ''}`}
                   onClick={() => quickInvest(plan)}
-                  style={{
-                    background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-                    color: '#ffffff',
-                    boxShadow: '0 6px 20px rgba(16, 185, 129, 0.3)',
-                  }}
                 >
                   Invest Now <FiArrowUpRight size={18} />
                 </button>

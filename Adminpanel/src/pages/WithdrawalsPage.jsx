@@ -7,6 +7,7 @@ const options = ['pending', 'processing', 'completed', 'rejected']
 
 const METHOD_LABELS = {
   bank_transfer: 'Bank Transfer',
+  opay: 'OPay',
   easypaisa: 'Easypaisa',
   jazzcash: 'JazzCash',
   nayapay: 'NayaPay',

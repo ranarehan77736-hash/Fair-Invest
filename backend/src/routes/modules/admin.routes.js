@@ -122,7 +122,7 @@ const updateSocialLinkSchema = z.object({
 });
 
 const createPaymentAccountSchema = z.object({
-  method: z.enum(["bank_transfer", "easypaisa", "jazzcash", "nayapay", "sadapay", "digit_plus", "crypto"]),
+  method: z.enum(["bank_transfer", "opay", "easypaisa", "jazzcash", "nayapay", "sadapay", "digit_plus", "crypto"]),
   displayName: z.string().min(2).max(120),
   accountTitle: z.string().min(2).max(120).optional(),
   accountNumber: z.string().min(2).max(120).optional(),
@@ -135,7 +135,7 @@ const createPaymentAccountSchema = z.object({
 });
 
 const updatePaymentAccountSchema = z.object({
-  method: z.enum(["bank_transfer", "easypaisa", "jazzcash", "nayapay", "sadapay", "digit_plus", "crypto"]).optional(),
+  method: z.enum(["bank_transfer", "opay", "easypaisa", "jazzcash", "nayapay", "sadapay", "digit_plus", "crypto"]).optional(),
   displayName: z.string().min(2).max(120).optional(),
   accountTitle: z.string().min(2).max(120).optional(),
   accountNumber: z.string().min(2).max(120).optional(),

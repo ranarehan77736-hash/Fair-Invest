@@ -16,6 +16,7 @@ const { safeJsonParse } = require("../../utils/jsonHelper");
 const router = express.Router();
 const PAYMENT_METHODS = [
   "bank_transfer",
+  "opay",
   "easypaisa",
   "jazzcash",
   "nayapay",

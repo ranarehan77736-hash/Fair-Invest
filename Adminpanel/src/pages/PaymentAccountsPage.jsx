@@ -15,6 +15,7 @@ const initialForm = {
 }
 const METHOD_OPTIONS = [
   { value: 'bank_transfer', label: 'Bank Transfer' },
+  { value: 'opay', label: 'OPay' },
   { value: 'easypaisa', label: 'Easypaisa' },
   { value: 'jazzcash', label: 'JazzCash' },
   { value: 'nayapay', label: 'NayaPay' },
@@ -40,8 +41,15 @@ const PAKISTANI_BANK_TEMPLATES = [
   { label: 'Standard Chartered', displayName: 'Standard Chartered Pakistan', logoPath: '/bank-logos/standard-chartered.jfif' },
   { label: 'JS Bank', displayName: 'JS Bank', logoPath: '/bank-logos/js-bank.png' },
   { label: 'Silkbank', displayName: 'Silkbank', logoPath: '/bank-logos/silk-bank.png' },
+  { label: 'OPay Bank', displayName: 'OPay Microfinance / Digital Bank', logoPath: '/bank-logos/opay.png' },
 ]
 const DIGITAL_METHOD_TEMPLATES = [
+  {
+    label: 'OPay',
+    method: 'opay',
+    displayName: 'OPay Wallet Account',
+    logoPath: '/bank-logos/opay.png',
+  },
   {
     label: 'Easypaisa',
     method: 'easypaisa',
