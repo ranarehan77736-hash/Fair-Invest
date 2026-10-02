@@ -1143,22 +1143,48 @@ router.delete(
     if (!depositId) throw new ApiError(400, "Invalid deposit ID");
     const deposit = await db("deposits").where({ id: depositId }).first();
     if (!deposit) throw new ApiError(404, "Deposit not found");
-    if (deposit.status !== "pending") {
-      throw new ApiError(400, "Only pending deposits can be deleted");
-    }
 
     await db.transaction(async (trx) => {
+      // 1. Delete associated transactions if reference exists
+      if (deposit.reference) {
+        await trx("transactions").where({ reference: deposit.reference }).del();
+      }
+
+      // 2. Delete the deposit record
       await trx("deposits").where({ id: depositId }).del();
-      await trx("transactions").where({ reference: deposit.reference }).del();
-      await trx("admin_actions").insert({
-        admin_id: req.user.id,
-        action: "delete_deposit",
-        target_type: "deposit",
-        target_id: String(depositId),
-      });
+
+      // 3. Record admin audit action safely
+      try {
+        await trx("admin_actions").insert({
+          admin_id: req.user.id,
+          action: "delete_deposit",
+          target_type: "deposit",
+          target_id: String(depositId),
+          meta: JSON.stringify({
+            amount: deposit.amount,
+            status: deposit.status,
+            userId: deposit.user_id,
+            method: deposit.method,
+          }),
+        });
+      } catch (actionErr) {
+        console.warn("Failed to record admin action for delete_deposit:", actionErr.message);
+      }
     });
 
-    res.json({ success: true, message: "Deposit deleted" });
+    // 4. Safely clean up proof image from disk if exists
+    if (deposit.proof_path) {
+      try {
+        const filePath = path.join(process.cwd(), deposit.proof_path.replace(/^\//, ""));
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      } catch (fileErr) {
+        console.warn("Failed to remove deposit proof file:", fileErr.message);
+      }
+    }
+
+    res.json({ success: true, message: "Deposit deleted successfully" });
   }),
 );
 

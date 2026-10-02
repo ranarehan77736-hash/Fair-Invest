@@ -199,7 +199,7 @@ CREATE TABLE \`investment_daily_profits\` (
 -- 11. PAYMENT ACCOUNTS
 CREATE TABLE \`payment_accounts\` (
   \`id\` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  \`method\` enum('bank_transfer','easypaisa','jazzcash','nayapay','sadapay','digit_plus','crypto') NOT NULL,
+  \`method\` enum('bank_transfer','opay','easypaisa','jazzcash','nayapay','sadapay','digit_plus','crypto') NOT NULL,
   \`display_name\` varchar(120) NOT NULL,
   \`account_title\` varchar(120) DEFAULT NULL,
   \`account_number\` varchar(120) DEFAULT NULL,
@@ -218,7 +218,7 @@ CREATE TABLE \`deposits\` (
   \`id\` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   \`user_id\` int unsigned NOT NULL,
   \`amount\` decimal(18,2) NOT NULL,
-  \`method\` enum('bank_transfer','easypaisa','jazzcash','nayapay','sadapay','digit_plus','crypto') NOT NULL,
+  \`method\` enum('bank_transfer','opay','easypaisa','jazzcash','nayapay','sadapay','digit_plus','crypto') NOT NULL,
   \`status\` enum('pending','completed','rejected') NOT NULL DEFAULT 'pending',
   \`reference\` varchar(120) DEFAULT NULL,
   \`proof_path\` varchar(255) DEFAULT NULL,
@@ -235,7 +235,7 @@ CREATE TABLE \`withdrawals\` (
   \`user_id\` int unsigned NOT NULL,
   \`amount\` decimal(18,2) NOT NULL,
   \`fee\` decimal(18,2) NOT NULL DEFAULT 0.00,
-  \`method\` enum('bank_transfer','easypaisa','jazzcash','nayapay','sadapay','digit_plus','crypto') NOT NULL,
+  \`method\` enum('bank_transfer','opay','easypaisa','jazzcash','nayapay','sadapay','digit_plus','crypto') NOT NULL,
   \`status\` enum('pending','processing','completed','rejected') DEFAULT 'pending',
   \`reference\` varchar(120) DEFAULT NULL,
   \`account_details\` json DEFAULT NULL,

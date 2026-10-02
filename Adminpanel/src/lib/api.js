@@ -256,16 +256,33 @@ export async function apiRequest(path, { method = 'GET', body, _retry = true } =
 
       let fallbackData = []
       if (path.includes('/admin/deposits')) {
-        fallbackData = [
-          { id: 1, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 100, method: 'Easypaisa', status: 'pending', reference: 'DEP-100201', proofPath: null, createdAt: new Date().toISOString() },
-          { id: 2, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 250, method: 'Bank Transfer', status: 'completed', reference: 'DEP-100202', proofPath: null, createdAt: new Date(Date.now() - 86400000).toISOString() },
-        ]
+        let storedDeposits = null
+        try {
+          const raw = localStorage.getItem('fairinvest-mock-deposits')
+          if (raw) storedDeposits = JSON.parse(raw)
+        } catch {
+          void 0
+        }
+        let list = Array.isArray(storedDeposits)
+          ? storedDeposits
+          : [
+              { id: 1, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 100, method: 'Easypaisa', status: 'pending', reference: 'DEP-100201', proofPath: null, createdAt: new Date().toISOString() },
+              { id: 2, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 250, method: 'Bank Transfer', status: 'completed', reference: 'DEP-100202', proofPath: null, createdAt: new Date(Date.now() - 86400000).toISOString() },
+            ]
+
         if (method === 'PATCH') {
+          const matchId = Number(path.split('/').filter(Boolean).find((part, i, arr) => arr[i - 1] === 'deposits') || path.split('/').filter(Boolean).pop())
+          list = list.map((item) => Number(item.id) === matchId ? { ...item, status: body?.status || item.status } : item)
+          try { localStorage.setItem('fairinvest-mock-deposits', JSON.stringify(list)) } catch { void 0 }
           return { ok: true, status: 'success', message: 'Deposit status updated successfully', data: body }
         }
         if (method === 'DELETE') {
+          const matchId = Number(path.split('/').filter(Boolean).pop())
+          list = list.filter((item) => Number(item.id) !== matchId)
+          try { localStorage.setItem('fairinvest-mock-deposits', JSON.stringify(list)) } catch { void 0 }
           return { ok: true, status: 'success', message: 'Deposit deleted successfully' }
         }
+        fallbackData = list
       } else if (path.includes('/admin/withdrawals')) {
         fallbackData = [
           { id: 1, userId: 2, userName: 'Rana Rehan', userEmail: 'ranarehan77736@gmail.com', userPhone: '+92 300 1234567', amount: 50, fee: 0, method: 'bank_transfer', accountDetails: { bankName: 'Easypaisa', accountTitle: 'Rana Rehan', accountNumber: '03001234567' }, status: 'pending', createdAt: new Date().toISOString() },

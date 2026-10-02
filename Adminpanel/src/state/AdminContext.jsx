@@ -158,8 +158,10 @@ export function AdminProvider({ children }) {
 
   const deleteDeposit = useCallback(
     async (id) => {
-      await apiRequest(`/admin/deposits/${id}`, { method: 'DELETE' })
+      const res = await apiRequest(`/admin/deposits/${id}`, { method: 'DELETE' })
+      setDeposits((prev) => prev.filter((d) => Number(d.id) !== Number(id)))
       await bootstrap()
+      return res?.message || 'Deposit deleted'
     },
     [bootstrap],
   )
@@ -235,6 +237,7 @@ export function AdminProvider({ children }) {
   const deletePlan = useCallback(
     async (id) => {
       await apiRequest(`/admin/plans/${id}`, { method: 'DELETE' })
+      setPlans((prev) => prev.filter((p) => Number(p.id) !== Number(id)))
       await bootstrap()
     },
     [bootstrap],
@@ -259,6 +262,10 @@ export function AdminProvider({ children }) {
   const deleteSocialLink = useCallback(
     async (id) => {
       await apiRequest(`/admin/social-links/${id}`, { method: 'DELETE' })
+      setSocialLinks((prev) => ({
+        ...prev,
+        items: (prev?.items || []).filter((s) => Number(s.id) !== Number(id)),
+      }))
       await bootstrap()
     },
     [bootstrap],
@@ -289,6 +296,7 @@ export function AdminProvider({ children }) {
   const deletePaymentAccount = useCallback(
     async (id) => {
       const response = await apiRequest(`/admin/payment-accounts/${id}`, { method: 'DELETE' })
+      setPaymentAccounts((prev) => prev.filter((a) => Number(a.id) !== Number(id)))
       await bootstrap()
       return response?.message || 'Payment account deleted'
     },

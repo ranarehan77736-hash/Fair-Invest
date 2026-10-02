@@ -475,7 +475,8 @@ INSERT INTO `knex_migrations` (`name`, `batch`, `migration_time`) VALUES
 ('20260630130000_resync_investment_payout_rates.js', 1, CURRENT_TIMESTAMP),
 ('20260701120000_add_performance_indexes.js', 1, CURRENT_TIMESTAMP),
 ('20260702120000_investment_start_datetime.js', 1, CURRENT_TIMESTAMP),
-('20260708120000_extend_plans_to_365_days.js', 1, CURRENT_TIMESTAMP)
+('20260708120000_extend_plans_to_365_days.js', 1, CURRENT_TIMESTAMP),
+('20260710000000_add_opay_to_method_enum.js', 1, CURRENT_TIMESTAMP)
 ON DUPLICATE KEY UPDATE `name`=VALUES(`name`);
 
 INSERT INTO `knex_migrations_lock` (`index`, `is_locked`) VALUES (1, 0)

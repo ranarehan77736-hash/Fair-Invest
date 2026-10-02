@@ -48,13 +48,23 @@ function DepositsPage() {
     }
   }
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this pending deposit request?')) return
+  const [depositToDelete, setDepositToDelete] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const confirmDelete = async () => {
+    if (!depositToDelete) return
+    setIsDeleting(true)
     try {
-      await deleteDeposit(id)
-      toast.success('Deposit deleted')
+      await deleteDeposit(depositToDelete.id)
+      toast.success(`Deposit #${depositToDelete.id} deleted successfully`)
+      if (selectedDeposit?.id === depositToDelete.id) {
+        setSelectedDeposit(null)
+      }
+      setDepositToDelete(null)
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message || 'Failed to delete deposit')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -117,11 +127,11 @@ function DepositsPage() {
                   </td>
                   <td>
                     <button
+                      type="button"
                       className="mini-btn danger-inline"
-                      disabled={item.status !== 'pending'}
                       onClick={(event) => {
                         event.stopPropagation()
-                        handleDelete(item.id)
+                        setDepositToDelete(item)
                       }}
                     >
                       Delete
@@ -153,6 +163,13 @@ function DepositsPage() {
                 }}
               >
                 Open in Users Manager
+              </button>
+              <button
+                type="button"
+                className="mini-btn danger-inline"
+                onClick={() => setDepositToDelete(selectedDeposit)}
+              >
+                Delete Deposit
               </button>
               <button className="mini-btn" onClick={() => setSelectedDeposit(null)}>
                 Close Detail
@@ -201,6 +218,47 @@ function DepositsPage() {
               <p>Deposit locked for investment use: Yes</p>
             </div>
           </div>
+          </div>
+        </div>
+      ) : null}
+
+      {depositToDelete ? (
+        <div className="record-modal" onClick={() => !isDeleting && setDepositToDelete(null)}>
+          <div className="record-modal-card" onClick={(event) => event.stopPropagation()} style={{ maxWidth: '460px' }}>
+            <div className="user-overview-head">
+              <div>
+                <h3 style={{ color: '#be123c', fontSize: '1.15rem' }}>Delete Deposit Request #{depositToDelete.id}</h3>
+                <p className="muted" style={{ marginTop: '0.25rem', fontSize: '0.84rem' }}>
+                  This action is permanent and cannot be undone.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ margin: '1.1rem 0', padding: '0.85rem 1rem', background: 'color-mix(in srgb, #be123c 8%, transparent)', borderRadius: '10px', border: '1px solid color-mix(in srgb, #be123c 20%, transparent)', fontSize: '0.88rem', lineHeight: '1.7' }}>
+              <div><strong>User:</strong> {depositToDelete.userName || userById.get(Number(depositToDelete.userId))?.name || `User #${depositToDelete.userId}`}</div>
+              <div><strong>Amount:</strong> ${Number(depositToDelete.amount || 0).toFixed(2)}</div>
+              <div><strong>Method:</strong> {depositToDelete.paymentAccountName || depositToDelete.method}</div>
+              <div><strong>Status:</strong> {depositToDelete.status || 'pending'}</div>
+            </div>
+
+            <div className="plan-actions" style={{ justifyContent: 'flex-end', gap: '10px', marginTop: '1.25rem' }}>
+              <button
+                type="button"
+                className="mini-btn"
+                disabled={isDeleting}
+                onClick={() => setDepositToDelete(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="mini-btn danger-inline"
+                disabled={isDeleting}
+                onClick={confirmDelete}
+              >
+                {isDeleting ? 'Deleting...' : 'Yes, Delete Request'}
+              </button>
+            </div>
           </div>
         </div>
       ) : null}
