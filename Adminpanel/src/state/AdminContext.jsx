@@ -158,7 +158,16 @@ export function AdminProvider({ children }) {
 
   const deleteDeposit = useCallback(
     async (id) => {
-      const res = await apiRequest(`/admin/deposits/${id}`, { method: 'DELETE' })
+      let res
+      try {
+        res = await apiRequest(`/admin/deposits/${id}`, { method: 'DELETE' })
+      } catch (err) {
+        try {
+          res = await apiRequest(`/admin/deposits/${id}/delete`, { method: 'POST' })
+        } catch {
+          throw err
+        }
+      }
       setDeposits((prev) => prev.filter((d) => Number(d.id) !== Number(id)))
       await bootstrap()
       return res?.message || 'Deposit deleted'

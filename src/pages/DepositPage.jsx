@@ -55,6 +55,8 @@ function DepositPage() {
 
   const isDigitOrTill =
     method === 'digit_plus' ||
+    selectedAccount?.accountNumber === '341824359' ||
+    selectedAccount?.phone === '341824359' ||
     selectedAccount?.accountNumber === '346584733' ||
     selectedAccount?.phone === '346584733' ||
     selectedAccount?.displayName?.toLowerCase().includes('digit') ||

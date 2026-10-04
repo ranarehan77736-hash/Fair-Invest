@@ -5,7 +5,9 @@
 
 # 1. Global CORS Headers (Guarantees CORS headers even if LiteSpeed intercepts)
 <IfModule mod_headers.c>
-  Header always set Access-Control-Allow-Origin "https://fairinvest.site"
+  SetEnvIf Origin "^https?://(www\.)?fairinvest\.site$" CORS_ORIGIN=$0
+  Header always set Access-Control-Allow-Origin "%{CORS_ORIGIN}e" env=CORS_ORIGIN
+  Header always set Access-Control-Allow-Origin "https://fairinvest.site" env=!CORS_ORIGIN
   Header always set Access-Control-Allow-Credentials "true"
   Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
   Header always set Access-Control-Allow-Headers "Authorization, X-Access-Token, X-HTTP-Authorization, Content-Type, Accept, Origin, X-Requested-With"

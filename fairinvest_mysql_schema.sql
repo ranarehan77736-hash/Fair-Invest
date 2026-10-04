@@ -452,7 +452,7 @@ INSERT INTO `site_links` (`id`, `title`, `url`, `sort_order`, `is_active`) VALUE
 ON DUPLICATE KEY UPDATE `title`=VALUES(`title`), `url`=VALUES(`url`), `is_active`=VALUES(`is_active`);
 
 INSERT INTO `payment_accounts` (`id`, `method`, `display_name`, `account_title`, `account_number`, `iban`, `phone`, `instructions`, `logo_path`, `is_active`, `sort_order`) VALUES
-(1, 'digit_plus', 'Digitt+ / Raast (Scan & Pay)', 'MashAllah Bhatti Mobilee', '346584733', NULL, '346584733', 'Scan the QR code or enter Till ID 346584733 in Digitt+ / Raast / banking apps. Make payment, take screenshot, and upload proof below.', '/images/digitt_plus_scan_pay.png', 1, 1),
+(1, 'digit_plus', 'Digitt+ / Raast (Scan & Pay)', 'Fairs Mobile Shop', '341824359', NULL, '341824359', 'Scan the QR code or enter Till ID 341824359 in Digitt+ / Raast / banking apps. Make payment, take screenshot, and upload proof below.', '/images/digitt_plus_scan_pay.png', 1, 1),
 (2, 'bank_transfer', 'Meezan Bank', 'FairInvest Treasury', '0101-0203040506', 'PK36MEZN0001010203040506', NULL, 'Send deposit to this account and upload the receipt screenshot.', '/bank-logos/meezan.png', 1, 2),
 (3, 'easypaisa', 'Easypaisa', 'FairInvest Official', '0300-1234567', NULL, '0300-1234567', 'Send via Easypaisa and submit transaction ID with screenshot.', '/bank-logos/easypaisa.png', 1, 3)
 ON DUPLICATE KEY UPDATE `display_name`=VALUES(`display_name`), `account_title`=VALUES(`account_title`), `account_number`=VALUES(`account_number`), `instructions`=VALUES(`instructions`), `logo_path`=VALUES(`logo_path`);
