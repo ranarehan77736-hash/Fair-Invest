@@ -20,6 +20,7 @@ rm -f "$OUT_TAR" "$OUT_ZIP"
 
 echo "Creating $OUT_TAR..."
 COPYFILE_DISABLE=1 tar \
+  --format ustar \
   --exclude='.DS_Store' \
   --exclude='._*' \
   -czvf "$OUT_TAR" .

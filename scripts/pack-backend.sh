@@ -31,6 +31,7 @@ FILES_TO_PACK=(
 
 echo "Creating $OUT_TAR..."
 COPYFILE_DISABLE=1 tar \
+  --format ustar \
   --exclude='.DS_Store' \
   --exclude='._*' \
   --exclude='.env' \
