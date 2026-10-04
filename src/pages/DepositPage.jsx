@@ -134,8 +134,8 @@ function DepositPage() {
     }
   }
 
-  const tillId = selectedAccount?.accountNumber === '346584733' || isDigitOrTill ? (selectedAccount?.accountNumber || '346584733') : selectedAccount?.accountNumber
-  const merchantTitle = selectedAccount?.accountTitle || (isDigitOrTill ? 'MashAllah Bhatti Mobilee' : '-')
+  const tillId = isDigitOrTill ? (selectedAccount?.accountNumber || '341824359') : selectedAccount?.accountNumber
+  const merchantTitle = selectedAccount?.accountTitle || (isDigitOrTill ? 'Fairs Mobile Shop' : '-')
 
   return (
     <section className="page-grid deposit-page">
